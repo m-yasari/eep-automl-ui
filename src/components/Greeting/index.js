@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import * as actions from './actions';
 import {Hello} from '../Hello';
 import {Entry} from '../Entry';
+import ListGroup from 'react-bootstrap/ListGroup';
 import 'whatwg-fetch';
 
 const mapStateToProps = (state) => (
@@ -54,11 +55,11 @@ class Greeting extends React.Component {
         return (
         <div>
             <Entry onAdd={onAdd} />
-            <ul>
+            <ListGroup class="col-sm-2" >
             {names.map((name, index) => (
                 <Hello key={index} {...name} onClick={() => onClick(name.id)}/>
             ))}
-            </ul>
+            </ListGroup>
         </div>
         );
     }

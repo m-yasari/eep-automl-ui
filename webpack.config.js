@@ -1,11 +1,26 @@
 const path = require('path');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 //const reactPatch = require.resolve('react-hot-loader/patch');
 const babelPollyfill = require.resolve('babel-polyfill');
 
-const minifyCSS = new ExtractTextPlugin("css/[name].css");
+const nodeEnv = process.env.ENV || 'development';
+
+const basePlugins = [
+    new MiniCssExtractPlugin({
+        filename: `css/[name].css`
+    }),
+    new CopyWebpackPlugin([
+        {from: 'src/index.html'},
+        {from: 'src/api', to: 'api'},
+        {from: 'src/img', to: 'img'}
+    ]),
+    new webpack.DefinePlugin({
+        'process.env.NODE_ENV': `'${nodeEnv}'`,
+    })
+];
 
 module.exports = {
     entry: {
@@ -18,7 +33,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
-        publicPath: '/static/'
+        publicPath: '/'
     },
     module: {
         rules: [
@@ -29,26 +44,33 @@ module.exports = {
               }
             ]    
           },
-          { test: /\.css$/, use: minifyCSS.extract('css-loader', 'postcss-loader') },
+          { test: /\.css$/, use: [
+              { loader: MiniCssExtractPlugin.loader, },
+              "css-loader"
+            ] 
+          },
           { test: /\.js$/, use: [
-              { loader: 'babel-loader', options: { presets: ["env", "react"]} }
+              { loader: 'babel-loader', options: { presets: ['@babel/preset-env', '@babel/preset-react']} }
             ],
             exclude: /node_modules/
           },
           { test: /\.jsx$/, use: [
-              { loader: 'babel-loader', options: { presets: ["env", "react"]} }
+              { loader: 'babel-loader', options: { presets: ['@babel/preset-env', '@babel/preset-react']} }
             ],
             exclude: /node_modules/
           }
         ]
     },
-    plugins: [
-        minifyCSS,
-        new CopyWebpackPlugin([
-            {from: 'src/index.html'},
-            {from: 'src/api', to: 'api'},
-            {from: 'src/img', to: 'img'}
-        ])
-    ],
-    devtool: 'source-map'
+    plugins: basePlugins,
+    devtool: 'source-map',
+    devServer: {
+        proxy: {
+            '/api': {
+                changeOrigin: true,
+                secure: false,
+                target: 'http://localhost:54321/',
+                pathRewrite: {'^/api/': '/'},
+            }
+        },
+    },
 }

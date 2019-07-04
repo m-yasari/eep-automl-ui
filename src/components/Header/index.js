@@ -1,9 +1,11 @@
 import React from 'react';
+import Image from 'react-bootstrap/Image';
 
 class Header extends React.Component {
     render() {
         return (
-        <div><img src='img/logo.png' /><br /></div>
+        <div><Image src='img/logo.jpg' roundedCircle /></div>
+        
         );
     }
 }
