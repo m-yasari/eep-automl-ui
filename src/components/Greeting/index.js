@@ -4,7 +4,7 @@ import mapDispatchToProps from '../../actions/creator';
 import Hello from '../Hello';
 import Entry from '../Entry';
 import ListGroup from 'react-bootstrap/ListGroup';
-import 'whatwg-fetch';
+import { getNames } from '../../api';
 
 const mapStateToProps = state => ({ names: state.names });
 
@@ -16,9 +16,7 @@ class Greeting extends React.Component {
     loadInitialList() {
         let { actions } = this.props;
 
-        fetch("/api/names.json", {
-            method: "GET"
-        }).then(function(response) {
+        getNames().then(function(response) {
             return response.json();
         }).then(function(result) {
             actions.loadAllNames(result);
