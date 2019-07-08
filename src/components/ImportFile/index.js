@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
@@ -10,7 +11,7 @@ import mapDispatchToProps from '../../actions/creator';
 import Constants from '../../constants';
 
 const mapStateToProps = (state, ownProps) => {
-    return ({ importFile: _.get(state, ownProps.statePath) });
+    return ({ importFile: _.get(state, [ownProps.statePath, ownProps.category]) });
 }
 
 class ImportFile extends React.Component {
@@ -53,18 +54,26 @@ class ImportFile extends React.Component {
 
     onClickImport() {
         const { statePath, actions, category } = this.props;
+        const currentStatePath = `${statePath}.${category}`;
 
         const filename = this.filenameInput.current.value;
 
         if (filename && filename.length>0) {
-            actions.resetState(statePath);
+            actions.resetState(currentStatePath);
             actions.importFileStart(category, filename);
             actions.callImportFile(category, filename );
         } else {
-            actions.changeState(statePath, 'To import, filename is mandatory!', 'errors.sourceFile');
+            actions.changeState(currentStatePath, 'To import, filename is mandatory!', 'errors.sourceFile');
         }
     }
 }
+
+ImportFile.propTypes = {
+    statePath: PropTypes.string.isRequired,
+    category: PropTypes.oneOf(['train', 'test']).isRequired,
+    fileLabel: PropTypes.string.isRequired,
+    onImport: PropTypes.func,
+};
 
 export default  connect(
     mapStateToProps,

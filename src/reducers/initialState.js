@@ -9,13 +9,13 @@ export default {
     capture: {
         validated: false,
         parseValidated: false,
-        trainFile: {
+        train: {
             name: '',
             inProgress: false,
             validated: false,
             errors: {},
         },
-        testFile: {
+        test: {
             name: '',
             inProgress: false,
             validated: false,

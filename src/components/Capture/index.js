@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
@@ -36,12 +37,12 @@ class Capture extends Step {
                         validated={capture.validated}
                     >
                         <ImportFile 
-                            statePath={`${statePath}.trainFile`} 
+                            statePath={statePath} 
                             fileLabel="Train"
                             category="train"
                             onImport={this.validate} />
                         <ImportFile 
-                            statePath={`${statePath}.testFile`} 
+                            statePath={statePath} 
                             fileLabel="Test" 
                             category="test"
                             onImport={this.validate} />
@@ -74,6 +75,10 @@ class Capture extends Step {
 
     }
 }
+
+Capture.propTypes = {
+    statePath: PropTypes.string.isRequired,
+};
 
 export default  connect(
     mapStateToProps,

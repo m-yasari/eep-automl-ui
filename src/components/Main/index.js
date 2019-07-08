@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import { Tabs, Tab } from 'react-bootstrap';
@@ -38,6 +39,10 @@ class Main extends React.Component {
         );
     }
 }
+
+Main.propTypes = {
+
+};
 
 export default  connect(
     mapStateToProps,
