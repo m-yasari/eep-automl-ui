@@ -6,12 +6,12 @@ import {Provider} from 'react-redux';
 import App from './components/App';
 import reducers from './reducers';
 import middleware from './middleware';
-import initialState from './initialState';
+import initialState from './reducers/initialState';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const rootElement = document.getElementById('app');
-const store = createStore(reducers, initialState, composeEnhancers(middleware));
+const store = createStore(reducers(), initialState, composeEnhancers(middleware));
 
 render(
     <Provider store={store}>

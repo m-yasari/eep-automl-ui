@@ -3,5 +3,29 @@
         "method": "GET",
         "url": "/api/names.json",
         "headers": {}
+    },
+    "check-file": {
+        "method": "GET",
+        "url": "/api/3/Typeahead/files",
+        "params": {
+            "src": "$",
+            "limit": "$"
+        },
+        "headers": {}
+    },
+    "import-file": {
+        "method": "GET",
+        "url": "/api/3/ImportFiles",
+        "params": {
+            "path": "$"
+        },
+        "headers": {}
+    },
+    "parse-setup": {
+        "method": "POST",
+        "url": "/api/3/ParseSetup",
+        "headers": {
+            "mimeType": "application/x-www-form-urlencoded; charset=UTF-8"
+        }
     }
 }

@@ -1,3 +1,9 @@
+export const RESET_STATE = 'RESET_STATE';
+export const CHANGE_STATE = 'CHANGE_STATE';
+export const CHANGE_STATES = 'CHANGE_STATES';
 export const ADD_NAME = 'ADD_NAME';
 export const REMOVE_NAME = 'REMOVE_NAME';
 export const LOAD_ALL_NAMES = 'LOAD_ALL_NAMES';
+export const IMPORT_FILE_START = 'IMPORT_FILE_START';
+export const IMPORT_FILE_COMPLETED = 'IMPORT_FILE_COMPLETED';
+export const FILE_IMPORTED = 'FILE_IMPORTED';

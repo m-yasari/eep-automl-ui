@@ -14,7 +14,7 @@ class Greeting extends React.Component {
         this.loadInitialList();
     }
     loadInitialList() {
-        let { actions } = this.props;
+        const { actions } = this.props;
 
         getNames().then(function(response) {
             return response.json();
@@ -25,7 +25,7 @@ class Greeting extends React.Component {
         });
     }
     render() {
-        let { names, actions } = this.props;
+        const { names, actions } = this.props;
         return (
         <div>
             <Entry />
