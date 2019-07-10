@@ -1,4 +1,5 @@
 import 'whatwg-fetch';
+import * as _ from 'lodash';
 import * as endpoints from './endpoints-dev.json';
 
 const apiCall = (endpoint, data, paramsObject = {}) => {
@@ -8,7 +9,7 @@ const apiCall = (endpoint, data, paramsObject = {}) => {
         Object.keys(endpoint.params).map(param => {
             let val = endpoint.params[param];
             if (val === '$') {
-                val = paramsObject[param];
+                val = _.get(paramsObject, param);
             }
             paramArr.push(`${param}=${encodeURIComponent(val)}`);
         });
@@ -24,11 +25,6 @@ const apiCall = (endpoint, data, paramsObject = {}) => {
     return fetch(url, options);
 }
 
-export const getNames = () => {
-    const endpoint = endpoints['fetch-names'];
-    return apiCall(endpoint);
-};
-
 export const checkFile = (path, limit = -1) => {
     const endpoint = endpoints['check-file'];
     return apiCall(endpoint, null, {src: path, limit: limit});
@@ -39,7 +35,18 @@ export const importFile = (path) => {
     return apiCall(endpoint, null, {path: path});
 };
 
-export const parseSetup = (frames) => {
+export const parseSetup = (filenames, exclude_fields = null) => {
     const endpoint = endpoints['parse-setup'];
-    return apiCall(endpoint, frames);
+    const params = exclude_fields ? {exclude_fields: [...exclude_fields]} : null;
+    return apiCall(endpoint, filenames, params);
+};
+
+export const parse = (parseObject, exclude_fields = null) => {
+    const endpoint = endpoints['parse'];
+    return apiCall(endpoint, parseObject, params);
+};
+
+export const jobStatus = (job) => {
+    const endpoint = endpoints['job-status'];
+    return apiCall(endpoint, job);
 };

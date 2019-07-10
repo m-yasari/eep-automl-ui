@@ -11,7 +11,7 @@ import ImportFile from '../ImportFile';
 import Step from '../Step';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
-import Constants from '../../constants';
+import * as Constants from '../../constants';
 
 const mapStateToProps = state => {
     return ({ capture: state.capture });
@@ -41,11 +41,6 @@ class Capture extends Step {
                             fileLabel="Train"
                             category="train"
                             onImport={this.validate} />
-                        <ImportFile 
-                            statePath={statePath} 
-                            fileLabel="Test" 
-                            category="test"
-                            onImport={this.validate} />
                     </Form>
                     <Row>
                         <Col>
@@ -62,12 +57,19 @@ class Capture extends Step {
                         <Col>
                             <Button className="float-right" 
                                 variant={capture.parseValidated ? 'primary' : 'secondary'}
-                                disabled={!capture.parseValidated} >Parse</Button>
+                                disabled={!capture.parseValidated} 
+                                onClick={() => this.onParseClick()}>Parse</Button>
                         </Col>
                     </Row>
                 </Card.Body>
             </Card>
         );
+    }
+
+    onParseClick() {
+        const { actions } = this.props;
+
+        actions.changeMainTab(Constants.SUMMARY_KEY);
     }
 
     validate() {

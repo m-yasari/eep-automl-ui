@@ -17,11 +17,7 @@ export const changeState = (statePath, val, attr = null) => (
     }
 );
 
-export const addName = name => ({ type: type.ADD_NAME, value: name });
-
-export const removeName = index => ({ type: type.REMOVE_NAME, id: index });
-
-export const loadAllNames = list => ({ type: type.LOAD_ALL_NAMES, value: list });
+export const changeMainTab = (activeKey) => ({ type: type.CHANGE_MAIN_TAB, activeKey: activeKey});
 
 export const importFileStart = (category, filename) => ({ 
     type: type.IMPORT_FILE_START, 
@@ -41,6 +37,33 @@ export const fileImported = (category) => ({
     category: category,
 });
 
+export const parseSetup = (category, filename) => ({ 
+    type: type.PARSE_SETUP, 
+    category: category,
+    filename: filename,
+});
+
+export const parseStart = (category, filename) => ({ 
+    type: type.PARSE_START, 
+    category: category,
+    filename: filename,
+});
+
+export const parseInProgress = (category, job) => ({ 
+    type: type.PARSE_IN_PROGRESS, 
+    category: category,
+    job: job,
+});
+
+export const parseComplete = (category, data, error) => ({ 
+    type: type.PARSE_COMPLETED, 
+    value: data,
+    category: category,
+    error: error,
+});
+
+// Following actions are invoking H2O APIs
+
 export const callImportFile = (category, filename) => (dispatch, getState) => {
     importFile(filename).then(
         resp => {
@@ -52,7 +75,7 @@ export const callImportFile = (category, filename) => (dispatch, getState) => {
             }
         }
     ).then(data => {
-        dispatch(importFileComplete(category, _.get(data, 'destination_frames[0]'), 'data'));
+        dispatch(importFileComplete(category, _.get(data, 'destination_frames[0]')));
         dispatch(fileImported(category));
     });
 };

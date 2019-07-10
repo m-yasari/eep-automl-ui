@@ -1,18 +1,12 @@
+import * as _ from 'lodash';
 import * as type from '../../actions/types';
 
 export const main = (state = [], action) => {
     switch(action.type) {
-        case type.ADD_NAME:
-            let lastId = state.length >= 1 ? state[state.length-1].id : 0;
-            return [
-                ...state,
-                {value: action.value,
-                id: ++lastId}
-            ];
-        case type.REMOVE_NAME:
-            return state.filter((name)=>{return name.id != action.id});
-        case type.LOAD_ALL_NAMES:
-            return action.value;
+        case type.CHANGE_MAIN_TAB:
+            state = _.clone(state);
+            _.set(state, "activeKey", action.activeKey);
+            break;
     }
     return state;
 }

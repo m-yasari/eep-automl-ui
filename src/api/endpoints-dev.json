@@ -11,7 +11,9 @@
             "src": "$",
             "limit": "$"
         },
-        "headers": {}
+        "headers": {
+            "Accept": "application/json"
+        }
     },
     "import-file": {
         "method": "GET",
@@ -19,13 +21,117 @@
         "params": {
             "path": "$"
         },
-        "headers": {}
+        "headers": {
+            "Accept": "application/json"
+        }
     },
     "parse-setup": {
         "method": "POST",
-        "url": "/api/3/ParseSetup",
+        "url": "/api/3/Parse",
+        "params": {
+            "exclude_fields": "$"
+        },
+        "body": {
+            "source_frames": "$"
+        },
         "headers": {
-            "mimeType": "application/x-www-form-urlencoded; charset=UTF-8"
+            "mimeType": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Accept": "application/json"
+        }
+    },
+    "parse": {
+        "method": "POST",
+        "url": "/api/3/Parse",
+        "params": {
+            "exclude_fields": "$"
+        },
+        "body": {
+            "source_frames": "$",
+            "destination_frame": "$",
+            "parse_type": "$",
+            "separator": "$:44",
+            "number_columns": "$",
+            "single_quotes": "$",
+            "column_names": "$:",
+            "column_types": "$",
+            "check_header": "$:-1",
+            "delete_on_done": "$:true",
+            "chunk_size": "$"
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
+    },
+    "job-status": {
+        "method": "GET",
+        "url": "/api/3/Job/{job}",
+        "params": {
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
+    },
+    "frames": {
+        "method": "GET",
+        "url": "/api/3/Frames",
+        "params": {
+            "exclude_fields": "$"
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
+    },
+    "frame-summary": {
+        "method": "GET",
+        "url": "/api/3/Frames/{frame}/summary",
+        "params": {
+            "exclude_fields": "$"
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
+    },
+    "automl-builder": {
+        "method": "POST",
+        "url": "/api/99/AutoMLBuilder",
+        "params": {
+            "exclude_fields": "$"
+        },
+        "body": {
+            "input_spec": {
+              "training_frame":"${trainig_frame}",
+              "response_column":"${response_column}",
+              "fold_column":"${fold_column}",
+              "weights_column":"${weights_column}",
+              "ignored_columns": "${ignored_columns}",
+              "sort_metric":"${sort_metric}"
+            },
+            "build_models":{
+              "exclude_algos":"${exclude_algos}",
+              "include_algos":"${include_algos}"
+            },
+            "build_control": {
+              "nfolds":"${nfolds}",
+              "keep_cross_validation_predictions":"${keep_cross_validation_predictions}",
+              "keep_cross_validation_models":"${keep_cross_validation_models}",
+              "keep_cross_validation_fold_assignment":"${keep_cross_validation_fold_assignment}",
+              "balance_classes":"${balance_classes}",
+              "class_sampling_factors":"${class_sampling_factors}",
+              "max_after_balance_size":"${max_after_balance_size}",
+              "export_checkpoints_dir":"${export_checkpoints_dir}",
+              "stopping_criteria":{
+                "seed":"${seed}",
+                "max_models":"${max_models}",
+                "max_runtime_secs":"${max_runtime_secs}",
+                "stopping_rounds":"${stopping_rounds}",
+                "stopping_tolerance":"${stopping_tolerance}"
+              },
+              "project_name":"${project_name}"
+            }
+          },
+        "headers": {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
         }
     }
 }

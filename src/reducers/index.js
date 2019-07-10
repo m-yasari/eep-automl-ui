@@ -2,7 +2,6 @@ import {combineReducers} from 'redux';
 import * as _ from 'lodash';
 import * as type from '../actions/types';
 import initialState from './initialState';
-import {names} from '../components/Greeting/reducer';
 import {main} from '../components/Main/reducer';
 import {capture} from '../components/Capture/reducer';
 import mapDispatchToProps from '../actions/creator';
@@ -32,7 +31,6 @@ const changeStateReducer = (state = {}, action) => {
 }
 
 const reducer = combineReducers({
-    names,
     main,
     capture,
 });

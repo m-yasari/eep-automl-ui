@@ -15,12 +15,6 @@ export default {
             validated: false,
             errors: {},
         },
-        test: {
-            name: '',
-            inProgress: false,
-            validated: false,
-            errors: {},
-        },
         inProgress: false,
         parseResult: 'success',
         errors: {}

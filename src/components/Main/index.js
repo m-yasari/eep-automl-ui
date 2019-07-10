@@ -12,6 +12,7 @@ const mapStateToProps = state => ({ main: state.main });
 class Main extends React.Component {
     constructor(props, context) {
         super(props, context);
+        this.mainTab = React.createRef();
     }
   
     render() {
@@ -20,8 +21,9 @@ class Main extends React.Component {
         return (
             <Tabs
                 id="main-controlled-tab"
+                ref={this.mainTab}
                 activeKey={main.activeKey}
-                onSelect={key => actions.selectMainTab({ key })}
+                onSelect={(key,event) => this.onSelectTab(key, event)}
             >
                 <Tab eventKey={Constants.CAPTURE_KEY} title="Capture">
                     <Capture statePath='capture' />
@@ -38,6 +40,11 @@ class Main extends React.Component {
             </Tabs>
         );
     }
+
+    onSelectTab(key, event) {
+        console.log("key:", key, " event:", event);
+    }
+
 }
 
 Main.propTypes = {
