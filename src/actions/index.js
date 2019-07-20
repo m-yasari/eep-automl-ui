@@ -119,14 +119,14 @@ export const callParseSetup = (category) => (dispatch, getState) => {
 };
 
 export const callParse = (category, parseSetupResult) => (dispatch, getState) => {
-    parse(filename, ['data']).then(resp => {
+    const body = parseParamBuilder(parseSetupResult);
+    parse(body).then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
         }
         return resp.json();
     }).then((json) => { // both fetching and parsing succeeded
-        dispatch(parseComplete(category, json));
-        dispatch(parseDone(category));
+        dispatch(monitorParseInProgress(category, json));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
             dispatch(parseComplete(category, null, `Import error: ${err.statusText}`));
@@ -135,3 +135,21 @@ export const callParse = (category, parseSetupResult) => (dispatch, getState) =>
         }
     });
 };
+
+const monitorParseInProgress = (category, parseResponse) => (dispatch, getState) => {
+
+};
+
+const parseParamBuilder = (parseSetupResult) => ({
+    destination_frame: parseSetupResult.destination_frame,
+    source_frames: parseSetupResult.source_frames[0].name, // TODO: to make it through array functions
+    parse_type: parseSetupResult.parse_type,
+    separator: parseSetupResult.separator,
+    number_columns: parseSetupResult.number_columns,
+    single_quotes: parseSetupResult.single_quotes,
+    column_names: parseSetupResult.column_names,
+    check_header: parseSetupResult.check_header,
+    delete_on_done: true,
+    chunk_size: parseSetupResult.chunk_size,
+    column_types: parseSetupResult.column_types,
+});

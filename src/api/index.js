@@ -64,6 +64,7 @@ export const parseSetup = (filenames, exclude_fields = null) => {
 
 export const parse = (parseObject, exclude_fields = null) => {
     const endpoint = endpoints['parse'];
+    const params = exclude_fields ? {_exclude_fields: [...exclude_fields]} : null;
     return apiCall(endpoint, parseObject, params);
 };
 
