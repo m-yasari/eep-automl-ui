@@ -1,7 +1,7 @@
 
 import * as Constants from '../constants';
 
-export default {
+const initialState = {
     // initialState
     main: {
         activeKey: Constants.CAPTURE_KEY,
@@ -9,15 +9,26 @@ export default {
     capture: {
         validated: false,
         parseValidated: false,
-        train: {
-            name: '',
-            inProgress: false,
-            validated: false,
-            errors: {},
-        },
         inProgress: false,
         parseResult: 'success',
         errors: {}
     },
+    dataFile: {
+        train: {
+            name: null,
+            inProgress: false,
+            imported: false,
+            apiError: null,
+            formErrors: {},
+        },
+        test: {
+            name: null,
+            inProgress: false,
+            imported: false,
+            apiError: null,
+            formErrors: {},
+        },
+    }
 };
 
+export default initialState;

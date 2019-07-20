@@ -4,7 +4,7 @@ import * as type from '../actions/types';
 import initialState from './initialState';
 import {main} from '../components/Main/reducer';
 import {capture} from '../components/Capture/reducer';
-import mapDispatchToProps from '../actions/creator';
+import {dataFile} from './dataFile';
 
 const resetStateReducer = (state = {}, action) => {
     state = _.clone(state);
@@ -25,7 +25,7 @@ const changeStateReducer = (state = {}, action) => {
         statePathArr = statePathArr.concat(attributeArr)
     }
     
-    _.set(state, statePathArr, action.value);
+    _.set(state, statePathArr, _.clone(action.value));
 
     return state;
 }
@@ -33,6 +33,7 @@ const changeStateReducer = (state = {}, action) => {
 const reducer = combineReducers({
     main,
     capture,
+    dataFile
 });
 
 export default () => (state, action) => {

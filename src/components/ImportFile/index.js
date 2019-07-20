@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Collapse from 'react-bootstrap/Collapse';
@@ -11,7 +12,7 @@ import mapDispatchToProps from '../../actions/creator';
 import Constants from '../../constants';
 
 const mapStateToProps = (state, ownProps) => {
-    return ({ importFile: _.get(state, [ownProps.statePath, ownProps.category]) });
+    return ({ importFile: _.get(state, ['dataFile', ownProps.category]) });
 }
 
 class ImportFile extends React.Component {
@@ -34,10 +35,10 @@ class ImportFile extends React.Component {
                     sm={8}
                     aria-describedby={`sourceFileLabel-${fileLabel}`}
                     name={`sourceFile-${fileLabel}`}
-                    isInvalid={!!importFile.errors.sourceFile}
+                    isInvalid={!!importFile.formErrors.sourceFile}
                 />
                 <Form.Control.Feedback type="invalid">
-                    {importFile.errors.sourceFile}
+                    {importFile.formErrors.sourceFile}
                 </Form.Control.Feedback>
                 <Button variant="primary" onClick={() => this.onClickImport()}>
                     <Collapse in={importFile.inProgress}>
@@ -48,6 +49,8 @@ class ImportFile extends React.Component {
                     </Collapse>
                     Import
                 </Button>
+                <Alert show={importFile.apiError} varient="danger">{importFile.apiError}</Alert>
+                <Alert show={importFile.imported} varient="success">Imported</Alert>
             </Form.Group>
         );
     }
@@ -59,11 +62,11 @@ class ImportFile extends React.Component {
         const filename = this.filenameInput.current.value;
 
         if (filename && filename.length>0) {
-            actions.resetState(currentStatePath);
-            actions.importFileStart(category, filename);
-            actions.callImportFile(category, filename );
+            //actions.resetState(currentStatePath);
+            actions.importDataFileStart(category, filename);
+            actions.callImportFile(category);
         } else {
-            actions.changeState(currentStatePath, 'To import, filename is mandatory!', 'errors.sourceFile');
+            actions.changeState(currentStatePath, 'To import, filename is mandatory!', 'formErrors.sourceFile');
         }
     }
 }

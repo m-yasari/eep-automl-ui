@@ -68,8 +68,11 @@ class Capture extends Step {
 
     onParseClick() {
         const { actions } = this.props;
+        const category = 'train';
+        actions.parseSetupStart(category);
+        actions.callParseSetup(category);
 
-        actions.changeMainTab(Constants.SUMMARY_KEY);
+        //actions.changeMainTab(Constants.SUMMARY_KEY);
     }
 
     validate() {

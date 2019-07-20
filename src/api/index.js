@@ -2,6 +2,22 @@ import 'whatwg-fetch';
 import * as _ from 'lodash';
 import * as endpoints from './endpoints-dev.json';
 
+const mergeFormData = (template, data) => {
+    let bodyArr = [];
+    Object.keys(template).map(param => {
+        let val = template[param];
+        if (val === '$' || val.startsWith('$:')) {
+            let dataval = _.get(data, param);
+            if (!dataval && val.startsWith('$:')) {
+                dataval = val.substring(2);
+            }
+            val = dataval;
+        }
+        bodyArr.push(`${param}=${encodeURIComponent(val)}`);
+    });
+    return bodyArr.join('&');
+};
+
 const apiCall = (endpoint, data, paramsObject = {}) => {
     let url = endpoint.url;
     if (endpoint.params) {
@@ -20,10 +36,13 @@ const apiCall = (endpoint, data, paramsObject = {}) => {
         headers: endpoint.headers || {},
     };
     if (endpoint.method.toUpperCase() === 'POST') {
-        options.body = JSON.stringify(data);
+        const contentType = endpoint.headers['Content-Type'];
+        options.body = (contentType && contentType.startsWith('application/json')) ?
+            data :
+            mergeFormData(_.clone(endpoint.body), data);
     }
     return fetch(url, options);
-}
+};
 
 export const checkFile = (path, limit = -1) => {
     const endpoint = endpoints['check-file'];
@@ -37,8 +56,10 @@ export const importFile = (path) => {
 
 export const parseSetup = (filenames, exclude_fields = null) => {
     const endpoint = endpoints['parse-setup'];
-    const params = exclude_fields ? {exclude_fields: [...exclude_fields]} : null;
-    return apiCall(endpoint, filenames, params);
+    const params = exclude_fields ? {_exclude_fields: [...exclude_fields]} : null;
+    return apiCall(endpoint, {
+        source_frames: filenames
+    }, params);
 };
 
 export const parse = (parseObject, exclude_fields = null) => {
