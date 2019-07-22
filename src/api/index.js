@@ -1,6 +1,7 @@
 import 'whatwg-fetch';
 import * as _ from 'lodash';
 import * as endpoints from './endpoints-dev.json';
+import { isArray } from 'util';
 
 const mergeFormData = (template, data) => {
     let bodyArr = [];
@@ -11,6 +12,9 @@ const mergeFormData = (template, data) => {
             if (!dataval && val.startsWith('$:')) {
                 dataval = val.substring(2);
             }
+            if (isArray(dataval)) {
+                dataval = JSON.stringify(dataval);
+            }
             val = dataval;
         }
         bodyArr.push(`${param}=${encodeURIComponent(val)}`);
@@ -18,16 +22,28 @@ const mergeFormData = (template, data) => {
     return bodyArr.join('&');
 };
 
-const apiCall = (endpoint, data, paramsObject = {}) => {
+const apiCall = (endpoint, data, paramsObject) => {
     let url = endpoint.url;
-    if (endpoint.params) {
+    const re = /\{[A-Za-z0-9_]*\}/g;
+
+    if (url.search(re) !== -1) {
+        url = _.clone(url);
+        let found = url.match(re);
+        found.map((key) => {
+            url = url.replace(key, paramsObject[key.substring(1, key.length - 1)]);
+        });
+    }
+    if (endpoint.params && paramsObject) {
         let paramArr = [];
         Object.keys(endpoint.params).map(param => {
             let val = endpoint.params[param];
             if (val === '$') {
                 val = _.get(paramsObject, param);
             }
-            paramArr.push(`${param}=${encodeURIComponent(val)}`);
+
+            if (val) {
+                paramArr.push(`${param}=${encodeURIComponent(val)}`);
+            }
         });
         url = `${url}?${paramArr.join('&')}`
     }
@@ -68,7 +84,16 @@ export const parse = (parseObject, exclude_fields = null) => {
     return apiCall(endpoint, parseObject, params);
 };
 
-export const jobStatus = (job) => {
+export const jobStatus = (jobId) => {
     const endpoint = endpoints['job-status'];
-    return apiCall(endpoint, job);
+    return apiCall(endpoint, null, {job: jobId});
+};
+
+export const frameSummary = (frameId, exclude_fields) => {
+    const endpoint = endpoints['frame-summary'];
+    const params = {frame: frameId};
+    if (exclude_fields) {
+        params._exclude_fields = exclude_fields;
+    } 
+    return apiCall(endpoint, null, params);
 };

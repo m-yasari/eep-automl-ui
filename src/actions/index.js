@@ -1,5 +1,5 @@
 import * as type from './types';
-import { checkFile, importFile, parseSetup, parse } from '../api';
+import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary } from '../api';
 
 export const resetState = (statePath) => (
     {
@@ -111,9 +111,9 @@ export const callParseSetup = (category) => (dispatch, getState) => {
         dispatch(callParse(category, json));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
-            dispatch(parseSetupComplete(category, null, `Import error: ${err.statusText}`));
+            dispatch(parseSetupComplete(category, null, `ParseSetup error: ${err.statusText}`));
         } else {
-            dispatch(parseSetupComplete(category, null, `Import error: ${err}`));
+            dispatch(parseSetupComplete(category, null, `ParseSetup error: ${err}`));
         }
     });
 };
@@ -129,15 +129,11 @@ export const callParse = (category, parseSetupResult) => (dispatch, getState) =>
         dispatch(monitorParseInProgress(category, json));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
-            dispatch(parseComplete(category, null, `Import error: ${err.statusText}`));
+            dispatch(parseComplete(category, null, `Parse error: ${err.statusText}`));
         } else {
-            dispatch(parseComplete(category, null, `Import error: ${err}`));
+            dispatch(parseComplete(category, null, `Parse error: ${err}`));
         }
     });
-};
-
-const monitorParseInProgress = (category, parseResponse) => (dispatch, getState) => {
-
 };
 
 const parseParamBuilder = (parseSetupResult) => ({
@@ -153,3 +149,62 @@ const parseParamBuilder = (parseSetupResult) => ({
     chunk_size: parseSetupResult.chunk_size,
     column_types: parseSetupResult.column_types,
 });
+
+const monitorParseInProgress = (category, parseResponse) => (dispatch, getState) => {
+    const jobId = _.get(parseResponse, 'job.key.name');
+    const id = setInterval(() => {
+        callJobStatus(jobId).then(
+            resp => {
+                console.log(resp);
+                let job = _.get(resp, 'jobs[0]');
+                dispatch(parseInProgress(category, job));
+                if (job.status === 'DONE') {
+                    clearInterval(id);
+                    dispatch(callFrameSummary(category));
+                }
+            },
+            err => {
+                clearInterval(id);
+                console.log(`Job error: ${err}!`);
+                dispatch(parseComplete(category, null, err));
+            }
+        )
+    }, 1000);
+};
+
+const callJobStatus = (job) => {
+    return new Promise((resolve,reject) => {
+        jobStatus(job).then(resp => {
+            if (!resp.ok) {
+                throw new StatusException(resp.status, resp.statusText);
+            }
+            return resp.json();
+        }).then((json) => { 
+            resolve(json);
+        }).catch(err => { // either fetching or parsing failed
+            if (err.status >= 400) {
+                reject(`JobStatus error: ${err.statusText}`);
+            } else {
+                reject(err);
+            }
+        }
+    )});
+}
+
+const callFrameSummary = (category) => (dispatch, getState) => {
+    let frame = _.get(getState(), `capture.parsedSetupData.destination_frame`);
+    frameSummary(frame, 'frames/chunk_summary,frames/columns/data').then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { 
+        dispatch(parseComplete(category, json));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(parseComplete(category, null, `FrameSummary error: ${err.statusText}`));
+        } else {
+            dispatch(parseComplete(category, null, err));
+        }
+    });
+}

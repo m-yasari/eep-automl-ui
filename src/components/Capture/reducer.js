@@ -13,9 +13,10 @@ export const capture = (state = [], action) => {
             case type.PARSE_SETUP_START:
                 state  = Object.assign({}, state, {
                     inProgress: true,
-                    parseSetup: false,
+                    parsedSetup: false,
                     parsed: false,
-                    data: null,
+                    parsedSetupData: null,
+                    parsedData: null,
                     apiError: null
                 });
                 break;
@@ -23,13 +24,15 @@ export const capture = (state = [], action) => {
                 state  = Object.assign({}, state, {
                     inProgress: false,
                     parseSetup: !action.error,
-                    data: action.data,
+                    parsedSetupData: action.data,
                     apiError: action.error
                 });
                 break;
             case type.PARSE_START:
                 state  = Object.assign({}, state, {
                     inProgress: true,
+                    progress: 0,
+                    progressMsg: '',
                     parsed: false,
                     parsedData: null,
                     apiError: null
@@ -38,8 +41,8 @@ export const capture = (state = [], action) => {
             case type.PARSE_IN_PROGRESS:
                 state  = Object.assign({}, state, {
                     inProgress: true,
-                    parsed: false,
-                    parsedData: null,
+                    progress: action.job.progress,
+                    progressMsg: action.job.progress_msg,
                     apiError: null
                 });
                 break;
@@ -47,7 +50,7 @@ export const capture = (state = [], action) => {
                 state  = Object.assign({}, state, {
                     inProgress: false,
                     parsed: !action.error,
-                    parsedData: data,
+                    parsedData: action.data,
                     apiError: action.error
                 });
                 break;
