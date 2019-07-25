@@ -1,7 +1,7 @@
 {
     "fetch-names": {
         "method": "GET",
-        "url": "/api/names.json",
+        "url": "/stub/names.json",
         "headers": {}
     },
     "check-file": {
