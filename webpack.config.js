@@ -14,7 +14,6 @@ const basePlugins = [
     }),
     new CopyWebpackPlugin([
         {from: 'src/index.html'},
-        {from: 'src/api', to: 'api'},
         {from: 'src/stub', to: 'stub'},
         {from: 'src/img', to: 'img'}
     ]),
