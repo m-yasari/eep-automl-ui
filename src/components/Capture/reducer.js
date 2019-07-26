@@ -5,7 +5,7 @@ import * as Constants from '../../constants';
 
 export const capture = (state = [], action) => {
     let newState, fileImport;
-    if (action.category === Constants.TRAIN_DATA) {
+    /*if (action.category === Constants.TRAIN_DATA) {
         switch(action.type) {
             case type.IMPORT_FILE_DONE:
                 state = Object.assign({}, state, {parseValidated: true});
@@ -55,6 +55,6 @@ export const capture = (state = [], action) => {
                 });
                 break;
             }
-    }
+    }*/
     return state;
 }

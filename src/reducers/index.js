@@ -4,7 +4,7 @@ import * as type from '../actions/types';
 import initialState from './initialState';
 import {main} from '../components/Main/reducer';
 import {capture} from '../components/Capture/reducer';
-import {dataFile} from './dataFile';
+import {dataFile} from '../components/DataFile/reducer';
 
 const resetStateReducer = (state = {}, action) => {
     state = _.clone(state);
