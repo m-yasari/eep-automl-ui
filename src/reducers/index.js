@@ -4,6 +4,7 @@ import * as type from '../actions/types';
 import initialState from './initialState';
 import {main} from '../components/Main/reducer';
 import {capture} from '../components/Capture/reducer';
+import {summary} from '../components/Summary/reducer';
 import {dataFile} from '../components/DataFile/reducer';
 
 const resetStateReducer = (state = {}, action) => {
@@ -33,6 +34,7 @@ const changeStateReducer = (state = {}, action) => {
 const reducer = combineReducers({
     main,
     capture,
+    summary,
     dataFile
 });
 

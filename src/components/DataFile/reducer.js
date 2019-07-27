@@ -46,6 +46,7 @@ export const dataFile = (state = [], action) => {
             break;
         case type.PARSE_START:
             newFileImport  = Object.assign({}, fileImport, {
+                inProgress: true,
                 progress: 0,
                 progressMsg: '',
                 parsed: false,

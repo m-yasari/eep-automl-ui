@@ -13,6 +13,10 @@ const initialState = {
         parseResult: 'success',
         errors: {}
     },
+    summary: {
+        columns: [],
+        reparseRequired: false
+    },
     dataFile: {
         train: {
             validated: false,

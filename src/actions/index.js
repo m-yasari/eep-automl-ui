@@ -1,5 +1,6 @@
 import * as type from './types';
 import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary } from '../api';
+import mapDispatchToProps from './creator';
 
 export const resetState = (statePath) => (
     {
@@ -71,6 +72,30 @@ export const parseComplete = (category, data) => ({
     category: category,
 });
 
+export const changeColumnType = (col, colType) => ({
+    type: type.CHANGE_COLUMN_TYPE,
+    column: col,
+    columnType: colType
+});
+
+export const changeColumnFlag = (col, flag) => ({
+    type: type.CHANGE_COLUMN_FLAG,
+    column: col,
+    flag: flag
+});
+
+export const changeTargetColumn = (col) => ({
+    type: type.CHANGE_TARGET_COLUMN,
+    column: col,
+});
+
+export const reparse = (category) => (dispatch, getState) => {
+    dispatch(parseStart(category));
+    const parsedSetupData = _.get(getState(), `dataFile.${category}.parsedSetupData`);
+    const reparseParam = _.get(getState(), "summary.columns");
+    dispatch(callParse(category, parsedSetupData, reparseParam));
+};
+
 // Following actions are invoking H2O APIs
 
 const StatusException = (status, statusText) => ({
@@ -117,8 +142,8 @@ export const callParseSetup = (category) => (dispatch, getState) => {
     });
 };
 
-export const callParse = (category, parseSetupResult) => (dispatch, getState) => {
-    const body = parseParamBuilder(parseSetupResult);
+export const callParse = (category, parseSetupResult, reparseParam) => (dispatch, getState) => {
+    const body = parseParamBuilder(parseSetupResult, reparseParam);
     parse(body).then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -135,19 +160,28 @@ export const callParse = (category, parseSetupResult) => (dispatch, getState) =>
     });
 };
 
-const parseParamBuilder = (parseSetupResult) => ({
-    destination_frame: parseSetupResult.destination_frame,
-    source_frames: parseSetupResult.source_frames[0].name, // TODO: to make it through array functions
-    parse_type: parseSetupResult.parse_type,
-    separator: parseSetupResult.separator,
-    number_columns: parseSetupResult.number_columns,
-    single_quotes: parseSetupResult.single_quotes,
-    column_names: parseSetupResult.column_names,
-    check_header: parseSetupResult.check_header,
-    delete_on_done: false,
-    chunk_size: parseSetupResult.chunk_size,
-    column_types: parseSetupResult.column_types,
-});
+const parseParamBuilder = (parseSetupResult, reparseParam = null) => {
+    let columns = null;
+    if (reparseParam) {
+        columns = [];
+        reparseParam.map((col) => {
+            columns.push(col.type);
+        });
+    }
+    return {
+        destination_frame: parseSetupResult.destination_frame,
+        source_frames: parseSetupResult.source_frames[0].name, // TODO: to make it through array functions
+        parse_type: parseSetupResult.parse_type,
+        separator: parseSetupResult.separator,
+        number_columns: parseSetupResult.number_columns,
+        single_quotes: parseSetupResult.single_quotes,
+        column_names: parseSetupResult.column_names,
+        check_header: parseSetupResult.check_header,
+        delete_on_done: false,
+        chunk_size: parseSetupResult.chunk_size,
+        column_types: columns || parseSetupResult.column_types,
+    }
+};
 
 const monitorParseInProgress = (category, parseResponse) => (dispatch, getState) => {
     const jobId = _.get(parseResponse, 'job.key.name');
