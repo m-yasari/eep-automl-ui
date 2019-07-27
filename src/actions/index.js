@@ -1,5 +1,6 @@
 import * as type from './types';
 import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary } from '../api';
+import mapDispatchToProps from './creator';
 
 export const resetState = (statePath) => (
     {
@@ -19,22 +20,28 @@ export const changeState = (statePath, val, attr = null) => (
 
 export const changeMainTab = (activeKey) => ({ type: type.CHANGE_MAIN_TAB, activeKey: activeKey });
 
+export const importFilename = (category, filename) => ({
+    type: type.IMPORT_FILENAME,
+    category: category,
+    filename: filename,
+});
+
 export const importDataFileStart = (category, filename) => ({
     type: type.IMPORT_DATA_FILE_START,
     category: category,
     filename: filename,
 });
 
-export const importDataFileComplete = (category, data, error) => ({
+export const importDataFileComplete = (category, data) => ({
     type: type.IMPORT_DATA_FILE_COMPLETED,
     data: data,
     category: category,
-    error: error,
 });
 
-export const importFileDone = (category) => ({
+export const importDataFileDone = (category, error) => ({
     type: type.IMPORT_FILE_DONE,
     category: category,
+    error: error
 });
 
 export const parseSetupStart = (category) => ({
@@ -42,15 +49,9 @@ export const parseSetupStart = (category) => ({
     category: category,
 });
 
-export const parseSetupComplete = (category, data, error) => ({
+export const parseSetupComplete = (category, data) => ({
     type: type.PARSE_SETUP_COMPLETED,
     data: data,
-    category: category,
-    error: error,
-});
-
-export const parseSetupDone = (category) => ({
-    type: type.PARSE_SETUP_DONE,
     category: category,
 });
 
@@ -65,12 +66,35 @@ export const parseInProgress = (category, job) => ({
     job: job,
 });
 
-export const parseComplete = (category, data, error) => ({
+export const parseComplete = (category, data) => ({
     type: type.PARSE_COMPLETED,
     data: data,
     category: category,
-    error: error,
 });
+
+export const changeColumnType = (col, colType) => ({
+    type: type.CHANGE_COLUMN_TYPE,
+    column: col,
+    columnType: colType
+});
+
+export const changeColumnFlag = (col, flag) => ({
+    type: type.CHANGE_COLUMN_FLAG,
+    column: col,
+    flag: flag
+});
+
+export const changeTargetColumn = (col) => ({
+    type: type.CHANGE_TARGET_COLUMN,
+    column: col,
+});
+
+export const reparse = (category) => (dispatch, getState) => {
+    dispatch(parseStart(category));
+    const parsedSetupData = _.get(getState(), `dataFile.${category}.parsedSetupData`);
+    const reparseParam = _.get(getState(), "summary.columns");
+    dispatch(callParse(category, parsedSetupData, reparseParam));
+};
 
 // Following actions are invoking H2O APIs
 
@@ -88,12 +112,12 @@ export const callImportFile = (category) => (dispatch, getState) => {
         return resp.json();
     }).then((json) => { // both fetching and parsing succeeded
         dispatch(importDataFileComplete(category, _.get(json, 'destination_frames[0]')));
-        dispatch(importFileDone(category));
+        dispatch(callParseSetup(category));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
-            dispatch(importDataFileComplete(category, null, `Import error: ${err.statusText}`));
+            dispatch(importDataFileDone(category, `Import error: ${err.statusText}`));
         } else {
-            dispatch(importDataFileComplete(category, null, `Import error: ${err}`));
+            dispatch(importDataFileDone(category, `Import error: ${err}`));
         }
     });
 };
@@ -111,15 +135,15 @@ export const callParseSetup = (category) => (dispatch, getState) => {
         dispatch(callParse(category, json));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
-            dispatch(parseSetupComplete(category, null, `ParseSetup error: ${err.statusText}`));
+            dispatch(importDataFileDone(category, `ParseSetup error: ${err.statusText}`));
         } else {
-            dispatch(parseSetupComplete(category, null, `ParseSetup error: ${err}`));
+            dispatch(importDataFileDone(category, `ParseSetup error: ${err}`));
         }
     });
 };
 
-export const callParse = (category, parseSetupResult) => (dispatch, getState) => {
-    const body = parseParamBuilder(parseSetupResult);
+export const callParse = (category, parseSetupResult, reparseParam) => (dispatch, getState) => {
+    const body = parseParamBuilder(parseSetupResult, reparseParam);
     parse(body).then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -129,26 +153,35 @@ export const callParse = (category, parseSetupResult) => (dispatch, getState) =>
         dispatch(monitorParseInProgress(category, json));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
-            dispatch(parseComplete(category, null, `Parse error: ${err.statusText}`));
+            dispatch(importDataFileDone(category, `Parse error: ${err.statusText}`));
         } else {
-            dispatch(parseComplete(category, null, `Parse error: ${err}`));
+            dispatch(importDataFileDone(category, `Parse error: ${err}`));
         }
     });
 };
 
-const parseParamBuilder = (parseSetupResult) => ({
-    destination_frame: parseSetupResult.destination_frame,
-    source_frames: parseSetupResult.source_frames[0].name, // TODO: to make it through array functions
-    parse_type: parseSetupResult.parse_type,
-    separator: parseSetupResult.separator,
-    number_columns: parseSetupResult.number_columns,
-    single_quotes: parseSetupResult.single_quotes,
-    column_names: parseSetupResult.column_names,
-    check_header: parseSetupResult.check_header,
-    delete_on_done: true,
-    chunk_size: parseSetupResult.chunk_size,
-    column_types: parseSetupResult.column_types,
-});
+const parseParamBuilder = (parseSetupResult, reparseParam = null) => {
+    let columns = null;
+    if (reparseParam) {
+        columns = [];
+        reparseParam.map((col) => {
+            columns.push(col.type);
+        });
+    }
+    return {
+        destination_frame: parseSetupResult.destination_frame,
+        source_frames: parseSetupResult.source_frames[0].name, // TODO: to make it through array functions
+        parse_type: parseSetupResult.parse_type,
+        separator: parseSetupResult.separator,
+        number_columns: parseSetupResult.number_columns,
+        single_quotes: parseSetupResult.single_quotes,
+        column_names: parseSetupResult.column_names,
+        check_header: parseSetupResult.check_header,
+        delete_on_done: false,
+        chunk_size: parseSetupResult.chunk_size,
+        column_types: columns || parseSetupResult.column_types,
+    }
+};
 
 const monitorParseInProgress = (category, parseResponse) => (dispatch, getState) => {
     const jobId = _.get(parseResponse, 'job.key.name');
@@ -166,7 +199,7 @@ const monitorParseInProgress = (category, parseResponse) => (dispatch, getState)
             err => {
                 clearInterval(id);
                 console.log(`Job error: ${err}!`);
-                dispatch(parseComplete(category, null, err));
+                dispatch(importDataFileDone(category, err));
             }
         )
     }, 1000);
@@ -192,7 +225,7 @@ const callJobStatus = (job) => {
 }
 
 const callFrameSummary = (category) => (dispatch, getState) => {
-    let frame = _.get(getState(), `capture.parsedSetupData.destination_frame`);
+    let frame = _.get(getState(), `dataFile.${category}.parsedSetupData.destination_frame`);
     frameSummary(frame, 'frames/chunk_summary,frames/columns/data').then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -200,11 +233,12 @@ const callFrameSummary = (category) => (dispatch, getState) => {
         return resp.json();
     }).then((json) => { 
         dispatch(parseComplete(category, json));
+        dispatch(importDataFileDone(category));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
-            dispatch(parseComplete(category, null, `FrameSummary error: ${err.statusText}`));
+            dispatch(importDataFileDone(category, `FrameSummary error: ${err.statusText}`));
         } else {
-            dispatch(parseComplete(category, null, err));
+            dispatch(importDataFileDone(category, err));
         }
     });
 }

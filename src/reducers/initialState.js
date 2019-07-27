@@ -13,20 +13,40 @@ const initialState = {
         parseResult: 'success',
         errors: {}
     },
+    summary: {
+        columns: [],
+        reparseRequired: false
+    },
     dataFile: {
         train: {
-            name: null,
+            validated: false,
+            name: '',
             inProgress: false,
+            progress: 0,
+            progressMsg: null,
             imported: false,
+            importedData: null,
+            parsedSetup: false,
+            parsedSetupData : null,
+            parsed: false,
+            parsedData: null,
             apiError: null,
-            formErrors: {},
+            formErrors: null,
         },
         test: {
-            name: null,
+            validated: false,
+            name: '',
             inProgress: false,
+            progress: 0,
+            progressMsg: null,
             imported: false,
+            importedData: null,
+            parsedSetup: false,
+            parsedSetupData : null,
+            parsed: false,
+            parsedData: null,
             apiError: null,
-            formErrors: {},
+            formErrors: null,
         },
     }
 };

@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
 import * as type from '../../actions/types';
+import * as Constants from '../../constants';
 
-export const main = (state = [], action) => {
+export const main = (state = {}, action) => {
     switch(action.type) {
         case type.CHANGE_MAIN_TAB:
             state = _.clone(state);

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import { Tabs, Tab } from 'react-bootstrap';
 import Capture from '../Capture';
+import Summary from '../Summary';
 import Step from '../Step';
 import * as Constants from '../../constants';
 
@@ -29,7 +30,7 @@ class Main extends React.Component {
                     <Capture statePath='capture' />
                 </Tab>
                 <Tab eventKey={Constants.SUMMARY_KEY} title="Summary" disabled>
-                    <Step />
+                    <Summary statePath='summary' />
                 </Tab>
                 <Tab eventKey={Constants.TRAIN_KEY} title="Train" disabled>
                     <Step />

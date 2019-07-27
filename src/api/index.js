@@ -9,7 +9,7 @@ const mergeFormData = (template, data) => {
         let val = template[param];
         if (val === '$' || val.startsWith('$:')) {
             let dataval = _.get(data, param);
-            if (!dataval && val.startsWith('$:')) {
+            if ((dataval===undefined || dataval===null) && val.startsWith('$:')) {
                 dataval = val.substring(2);
             }
             if (isArray(dataval)) {
