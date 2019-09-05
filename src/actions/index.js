@@ -20,6 +20,12 @@ export const changeState = (statePath, val, attr = null) => (
 
 export const changeMainTab = (activeKey) => ({ type: type.CHANGE_MAIN_TAB, activeKey: activeKey });
 
+export const setDisableSummaryFlag = (disableSummaryTab) => ({ type: type.DISABLE_SUMMARY_TAB, disableSummaryTab: disableSummaryTab});
+
+export const setDisableTrainFlag = (disableTrainTab) => ({ type: type.DISABLE_TRAIN_TAB, disableTrainTab: disableTrainTab});
+
+export const openSettingsTrain = (showPopup) => ({ type: type.OPEN_SETTINGS_TRAIN, showPopup: showPopup});
+
 export const importFilename = (category, filename) => ({
     type: type.IMPORT_FILENAME,
     category: category,

@@ -7,8 +7,10 @@ import Capture from '../Capture';
 import Summary from '../Summary';
 import Step from '../Step';
 import * as Constants from '../../constants';
+import Train from '../Train';
+import Leaderboard from '../Leaderboard';
 
-const mapStateToProps = state => ({ main: state.main });
+const mapStateToProps = state => ({ main: state.main, summary: state.summary, train: state.train });
 
 class Main extends React.Component {
     constructor(props, context) {
@@ -17,7 +19,7 @@ class Main extends React.Component {
     }
   
     render() {
-        const { main, actions } = this.props;
+        const { main, actions, summary, train } = this.props;
 
         return (
             <Tabs
@@ -29,14 +31,14 @@ class Main extends React.Component {
                 <Tab eventKey={Constants.CAPTURE_KEY} title="Capture">
                     <Capture statePath='capture' />
                 </Tab>
-                <Tab eventKey={Constants.SUMMARY_KEY} title="Summary" disabled>
+                <Tab eventKey={Constants.SUMMARY_KEY} title="Summary" disabled={summary.disableSummaryTab}>
                     <Summary statePath='summary' />
                 </Tab>
-                <Tab eventKey={Constants.TRAIN_KEY} title="Train" disabled>
-                    <Step />
+                <Tab eventKey={Constants.TRAIN_KEY} title="Train" disabled={train.disableTrainTab}>
+                    <Train statePath='train' />
                 </Tab>
                 <Tab eventKey={Constants.LEADERBOARD_KEY} title="Leaderboard" disabled>
-                    <Step />
+                    <Leaderboard statePath='leaderboard' />
                 </Tab>
             </Tabs>
         );

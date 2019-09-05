@@ -15,7 +15,8 @@ const initialState = {
     },
     summary: {
         columns: [],
-        reparseRequired: false
+        reparseRequired: false,
+        disableSummaryTab: true
     },
     dataFile: {
         train: {
@@ -48,6 +49,10 @@ const initialState = {
             apiError: null,
             formErrors: null,
         },
+    },
+    train: {
+        showPopup: false,
+        disableTrainTab: true
     }
 };
 
