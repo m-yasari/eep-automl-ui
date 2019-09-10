@@ -9,6 +9,7 @@ import Step from '../Step';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
+import * as _ from 'lodash';
 import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TrainSettings from '../TrainSettings';
@@ -22,10 +23,6 @@ class Train extends Step{
 
     constructor(props, context){
         super(props, context);
-        this.state = {
-            selectedRowsIdArr: [],
-            disableStartTraining: true,
-        };
         this.handleClose = this.handleClose.bind(this);
         this.onClickSettings = this.onClickSettings.bind(this);
     }
@@ -58,72 +55,40 @@ class Train extends Step{
     }
 
     checkAllRecordsSelected() {
-        const {selectedRowsIdArr} = this.state;
+        const {train: {models}} = this.props;
 
         return modelsConfig.every((row) => {
-            return(selectedRowsIdArr.indexOf(row.id) !== -1);
+            return(models.indexOf(row.id) !== -1);
         });
     }
 
     handleClickForHeaderCheckbox(e) {
 
-        const {selectedRowsIdArr} = this.state;
+        const {actions} = this.props;
 
-        let allRowsSelected = this.checkAllRecordsSelected();
-
-        let concatArray = [...this.state.selectedRowsIdArr];
-
-        if(!allRowsSelected){
-
-            modelsConfig.forEach(function(row){
-
-                if(selectedRowsIdArr.indexOf(row.id) === -1){
-                      concatArray = [...concatArray];
-                      concatArray.push(row.id);
-                }
-            })
-
-            this.setState({ selectedRowsIdArr: concatArray});
-            this.setState({disableStartTraining: false});
-        }
-        else {
-            let tempArr = [];
-            this.setState({ selectedRowsIdArr: tempArr});
-            this.setState({disableStartTraining: true});
-        }
+        actions.selectAllModels2Train(!this.checkAllRecordsSelected());
     }
 
     isSelected(row) {
-        const {selectedRowsIdArr} = this.state;
+        const {train: {models}} = this.props;
 
-        return (selectedRowsIdArr.indexOf(row.id) !== -1 ? true : false);
+        return (models.indexOf(row.id) !== -1 ? true : false);
+    }
+
+    isAnySelected() {
+        const {train: {models}} = this.props;
+
+        return models.length>0;
     }
 
     handleClickForCheckbox(e, row){
-        const {selectedRowsIdArr} = this.state;
+        const {actions} = this.props;
         
-        let concatArray = [...selectedRowsIdArr];
-
-        if(!this.isSelected(row)){
-            concatArray.push(row.id);
-
-            this.setState({selectedRowsIdArr: concatArray});
-            this.setState({disableStartTraining: false});
-        }
-        else {
-            var index = concatArray.indexOf(row.id);
-            if( index !== -1){
-                concatArray.splice(index, 1);
-                this.setState({selectedRowsIdArr: concatArray});
-            }
-
-            if(concatArray.length === 0){
-                this.setState({disableStartTraining: true});
-            }
-        }
+        actions.selectModel2Train(row.id);
     }
     
     renderTrainHeader(columnsHeader) {
+        const {train} = this.props;
         return (
             <thead>
                 <tr>
@@ -152,6 +117,7 @@ class Train extends Step{
     }
 
     renderTrainData(columnsHeader, models) {
+        const {train} = this.props;
         const listItems = models.map((row, rowIndex) => {
             const selected = this.isSelected(row);
             return (
@@ -182,18 +148,14 @@ class Train extends Step{
                     })
                 }
                 </tr>
+            );
+        });
+        return (
+            <tbody>{listItems}</tbody>
         );
-    });
-    return (
-        <tbody>{listItems}</tbody>
-    );
-}
+    }
 
     render() {
-        const {train, actions} = this.props;
-
-        const { disableStartTraining } = this.state;
-
         const handleClose = this.handleClose;
 
         return (
@@ -211,7 +173,7 @@ class Train extends Step{
                                 {this.renderTrainData(columnsHeader, modelsConfig)}
                             </Table>
                         </Form>
-                        <Button onClick={() => this.onClickNext()} disabled={disableStartTraining}>
+                        <Button onClick={() => this.onClickNext()} disabled={!this.isAnySelected()}>
                             Start Training
                         </Button>
                     </Card.Body>
@@ -219,7 +181,7 @@ class Train extends Step{
             </>
         );
     }
-}
+};
 
 Train.propTypes = {
     statePath: PropTypes.string.isRequired

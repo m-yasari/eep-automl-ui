@@ -52,7 +52,8 @@ const initialState = {
     },
     train: {
         showPopup: false,
-        disableTrainTab: true
+        disableTrainTab: true,
+        models: [],
     }
 };
 
