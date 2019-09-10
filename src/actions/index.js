@@ -95,6 +95,33 @@ export const changeTargetColumn = (col) => ({
     column: col,
 });
 
+export const selectModel2Train = (id) => ({
+    type: type.TRAIN_SELECT_MODEL,
+    id: id,
+});
+
+export const selectAllModels2Train = (flag) => ({
+    type: type.TRAIN_SELECT_ALL_MODELS,
+    flag: flag
+});
+
+export const trainStart = (category) => ({
+    type: type.TRAIN_START,
+    category: category,
+});
+
+export const trainInProgress = (category, job) => ({
+    type: type.TRAIN_IN_PROGRESS,
+    category: category,
+    job: job,
+});
+
+export const trainComplete = (category, data) => ({
+    type: type.TRAIN_COMPLETED,
+    data: data,
+    category: category,
+});
+
 export const reparse = (category) => (dispatch, getState) => {
     dispatch(parseStart(category));
     const parsedSetupData = _.get(getState(), `dataFile.${category}.parsedSetupData`);
