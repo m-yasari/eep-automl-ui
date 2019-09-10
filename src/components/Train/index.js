@@ -10,9 +10,9 @@ import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
 import Table from 'react-bootstrap/Table';
-import FontAwesomne from 'react-fontawesome';
-import TrainSettings from '../TrainSettings/TrainSettings_cmp';
-import CustomButton from '../CustomButton/index';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import TrainSettings from '../TrainSettings';
+import { modelsConfig, columnsHeader } from './config';
 
 const mapStateToProps = state => {
     return ({ train: state.train, trainFile: state.dataFile.train});
@@ -25,91 +25,9 @@ class Train extends Step{
         this.state = {
             selectedRowsIdArr: [],
             disableStartTraining: true,
-    columnHeader : [
-        {
-            columnName: '#',
-            columnType: 'rowIndex',
-            sortable: false
-        },
-        {
-            columnName: 'Models',
-            columnType: 'string',
-            sortable: false
-        },
-        {
-            columnName: 'Provider',
-            columnType: 'string',
-            sortable: false
-        },
-        {
-            columnName: 'Flag',
-            columnType: 'checkBox',
-            sortable: false
-        },
-        {
-            columnName: 'Info',
-            columnType: 'link',
-            sortable: false
-        },
-        // '#',
-        // 'Models',
-        // 'Provider',
-        // 'Flag',
-        // 'Info'
-    ],
-    dummyData : [
-        {
-            '#': 1,
-            'Models': 'DRF',
-            'Provider': 'H2O AutoML',
-            'Info': 'Documentation',
-            'Link' : 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/drf.html',
-            'id': 1
-        },
-        {
-            '#': 2,
-            'Models': 'GLM',
-            'Provider': 'H2O AutoML',
-            'Info': 'Documentation',
-            'Link': 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/glm.html',
-            'id': 2
-        },
-        {
-            '#': 3,
-            'Models': 'XGBoost',
-            'Provider': 'H2O AutoML',
-            'Info': 'Documentation',
-            'Link': 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/xgboost.html',
-            'id': 3
-        },
-        {
-            '#': 4,
-            'Models': 'GBM',
-            'Provider': 'H2O AutoML',
-            'Info': 'Documentation',
-            'Link': 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/gbm.html',
-            'id': 4
-        },
-        {
-            '#': 5,
-            'Models': 'DeepLearning',
-            'Provider': 'H2O AutoML',
-            'Info': 'Documentation',
-            'Link': 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/deep-learning.html',
-            'id': 5
-        },
-        {
-            '#': 6,
-            'Models': 'Stack Ensembled',
-            'Provider': 'H2O AutoML',
-            'Info': 'Documentation',
-            'Link': 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/stacked-ensembles.html',
-            'id': 6
-        }
-    ]
-};
-this.handleClose = this.handleClose.bind(this);
-this.onClickInfo = this.onClickInfo.bind(this);
+        };
+        this.handleClose = this.handleClose.bind(this);
+        this.onClickSettings = this.onClickSettings.bind(this);
     }
 
     /**
@@ -126,10 +44,10 @@ this.onClickInfo = this.onClickInfo.bind(this);
      * Method to go to the specific link on click of Documentation
      */
     onClickLink(e, row){
-        window.location.href = row.Link;
+        window.open(row.url, row.model);
     }
 
-    onClickInfo(e) {
+    onClickSettings(e) {
         const {actions} = this.props;
         actions.openSettingsTrain(true);
     }
@@ -142,7 +60,7 @@ this.onClickInfo = this.onClickInfo.bind(this);
     checkAllRecordsSelected() {
         const {selectedRowsIdArr} = this.state;
 
-        return this.state.dummyData.every((row) => {
+        return modelsConfig.every((row) => {
             return(selectedRowsIdArr.indexOf(row.id) !== -1);
         });
     }
@@ -157,7 +75,7 @@ this.onClickInfo = this.onClickInfo.bind(this);
 
         if(!allRowsSelected){
 
-            this.state.dummyData.forEach(function(row){
+            modelsConfig.forEach(function(row){
 
                 if(selectedRowsIdArr.indexOf(row.id) === -1){
                       concatArray = [...concatArray];
@@ -205,87 +123,92 @@ this.onClickInfo = this.onClickInfo.bind(this);
         }
     }
     
-    // componentDidMount(){
-    //     this.forceUpdate();
-    // }
+    renderTrainHeader(columnsHeader) {
+        return (
+            <thead>
+                <tr>
+                    {columnsHeader.map((columnHead, index) => {
+                        if(columnHead.type === 'checkBox'){
+                            return(
+                                <th key={index}>
+                                    <Form.Check type="checkbox" aria-label="Select field to to select all rows.">
+                                        <Form.Check.Input type="checkbox" 
+                                            checked={this.checkAllRecordsSelected()}
+                                            onClick={(e) => this.handleClickForHeaderCheckbox(e)} />
+                                        <Form.Check.Label>Flag</Form.Check.Label>
+                                    </Form.Check>
+                                </th>
+                            );
+                        }
+                        else {
+                            return (
+                                <th key={index}>{columnHead.label}</th>
+                            );
+                        }
+                    })}
+                </tr>
+            </thead>
+        );
+    }
+
+    renderTrainData(columnsHeader, models) {
+        const listItems = models.map((row, rowIndex) => {
+            const selected = this.isSelected(row);
+            return (
+                <tr key = {rowIndex}>
+                {
+                    columnsHeader.map((column, columnIndex) => {
+                        switch(column.type){
+                            case 'rowIndex':
+                                return (<td key={columnIndex}>{++rowIndex}</td>);
+
+                            case 'checkBox':
+                                return(<td key={columnIndex}>
+                                    <Form.Check type="checkbox" aria-label="Select field to consider it as a factor."
+                                    onClick={(e) => this.handleClickForCheckbox(e, row)}
+                                    checked = {selected} />
+                                </td>);
+
+                            case 'link' :
+                                return (
+                                    <td key={columnIndex}>
+                                        <Button class="btn btn-link" onClick={(e) => this.onClickLink(e, row)}>Documentation</Button>
+                                    </td>
+                                );
+
+                            default:
+                                return (<td key={columnIndex}>{row[column.name]}</td>);
+                        }
+                    })
+                }
+                </tr>
+        );
+    });
+    return (
+        <tbody>{listItems}</tbody>
+    );
+}
 
     render() {
         const {train, actions} = this.props;
 
-        const {columnHeader, dummyData, disableStartTraining} = this.state;
+        const { disableStartTraining } = this.state;
+
+        const handleClose = this.handleClose;
 
         return (
             <>
-                <TrainSettings closePopup={this.handleClose} />
+                <TrainSettings closePopup={handleClose} />
                 <Card>
-                    <Card.Body>
-                        <CustomButton onClick={this.onClickInfo}>
-                            <FontAwesomne name='cog' size='2x' style = {{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)', float: 'right'}} />
-                        </CustomButton>
                     <Card.Title>Models for Training</Card.Title>
+                    <Card.Body>
+                        <Button onClick={() => this.onClickSettings()} style={{ float: 'right'}} >
+                            <FontAwesomeIcon icon='cog' size='2x' />
+                        </Button>
                         <Form id="train-form">
                             <Table striped border hover>
-                                <thead>
-                                    <tr>
-                                        {columnHeader.map((columnHead, index) => {
-                                            if(columnHead.columnType === 'checkBox'){
-                                                return(
-                                                    <th key={index}>
-                                                        Flag
-                                                        <Form.Check type="checkbox" aria-label="Select field to to select all rows."
-                                                        checked={this.checkAllRecordsSelected()}
-                                                        onClick={(e) => this.handleClickForHeaderCheckbox(e)} />
-                                                    </th>
-                                                );
-                                            }
-                                            else {
-                                                return (
-                                                    <th key={index}>{columnHead.columnName}</th>
-                                                );
-                                            }
-                                        })}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        dummyData.map((row, rowIndex) => {
-                                            const selected = this.isSelected(row);
-                                            return(
-                                                <tr key = {rowIndex}>
-                                                    {
-                                                        columnHeader.map((column, columnIndex) => {
-                                                            switch(column.columnType){
-                                                                case 'rowIndex':
-                                                                    return (<td key={columnIndex}>{++rowIndex}</td>);
-                                                                    break;
-
-                                                                case 'checkBox':
-                                                                    return(<td key={columnIndex}>
-                                                                        <Form.Check type="checkbox" aria-label="Select field to consider it as a factor."
-                                                                        onClick={(e) => this.handleClickForCheckbox(e, row)}
-                                                                        checked = {selected} />
-                                                                    </td>);
-                                                                    break;
-
-                                                                case 'link' :
-                                                                    return (
-                                                                        <td key={columnIndex}>
-                                                                            <button type="button" class="btn btn-link" onClick={(e) => this.onClickLink(e, row)}>Documentation</button>
-                                                                        </td>
-                                                                    );
-                                                                    break;
-
-                                                                default:
-                                                                    return (<td key={columnIndex}>{row[column.columnName]}</td>);
-                                                                    break;
-                                                            }
-                                                        })
-                                                    }
-                                                </tr>
-                                            );
-                                        })
-                                    }
-                                </tbody>
+                                {this.renderTrainHeader(columnsHeader)}
+                                {this.renderTrainData(columnsHeader, modelsConfig)}
                             </Table>
                         </Form>
                         <Button onClick={() => this.onClickNext()} disabled={disableStartTraining}>

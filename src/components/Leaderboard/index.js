@@ -8,8 +8,8 @@ import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
 import Table from 'react-bootstrap/Table';
-import FontAwesomne from 'react-fontawesome';
-import TrainSettings from '../TrainSettings/TrainSettings_cmp';
+import FontAwesomne from '@fortawesome/react-fontawesome';
+import TrainSettings from '../TrainSettings';
 import CustomButton from '../CustomButton/index';
 
 const mapStateToProps = state => {
@@ -102,16 +102,16 @@ class Leaderboard extends Step{
 
         const {train, actions} = this.props
         const {columnHeader, dummyData} = this.state;
+        /*<CustomButton onClick={() => this.onClickInfo()}>
+            <FontAwesomne name='cog' size='2x' style = {{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)', float: 'right'}} />
+        </CustomButton>*/
 
         return (
             <>
-                <TrainSettings closePopup={this.handleClose} parentActions={actions} />
+                <TrainSettings closePopup={() => this.handleClose()} parentActions={actions} />
                 <Card>
-                    <Card.Body>
-                        <CustomButton onClick={this.onClickInfo}>
-                            <FontAwesomne name='cog' size='2x' style = {{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)', float: 'right'}} />
-                        </CustomButton>
                     <Card.Title>Models for Training</Card.Title>
+                    <Card.Body>
                         <Form id="leaderboard-form">
                             <Table striped border hover>
                                 <thead>
@@ -136,7 +136,7 @@ class Leaderboard extends Step{
                                                                 case 'link' :
                                                                     return (
                                                                         <td key={columnIndex}>
-                                                                            <button type="button" class="btn btn-link" onClick={(e) => this.onClickLink(e, row)}>{row[column.columnName]}</button>
+                                                                            <Button class="btn btn-link" onClick={(e) => this.onClickLink(e, row)}>{row[column.columnName]}</Button>
                                                                         </td>
                                                                     );
                                                                     break;

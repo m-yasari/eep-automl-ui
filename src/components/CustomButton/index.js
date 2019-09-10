@@ -1,5 +1,6 @@
 import React from 'react';
 import Step from '../Step';
+import Button from 'react-bootstrap/Button';
 import {connect} from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import PropTypes from 'prop-types';
@@ -17,10 +18,16 @@ class CustomButton extends Step {
     render() {
         const {onClick, children} = this.props;
 
+        /* TODO: Revise
         return (
             <button type="button" style={{float: 'right', border: 'none', backgroundColor: 'transparent'}} onClick = {onClick}>
                 {children}
             </button>
+        );*/
+        return (
+            <Button onClick={() => onClick()}>
+                {children}
+            </Button>
         );
     }
 }
