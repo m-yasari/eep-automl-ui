@@ -54,6 +54,11 @@ export const summary = (state = {}, action) => {
                 target: action.column
             });
             break;
+
+        case type.DISABLE_SUMMARY_TAB:
+            state = _.clone(state);
+            _.set(state, "disableSummaryTab", action.disableSummaryTab);
+            break;
     }
     return state;
 }

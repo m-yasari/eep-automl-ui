@@ -21,7 +21,6 @@ class Capture extends Step {
   
     onClickNext() {
         const { actions, trainFile} = this.props;
-
         actions.changeMainTab(Constants.SUMMARY_KEY);
     }
 
@@ -30,7 +29,7 @@ class Capture extends Step {
 
         return (
             <Card>
-                <Card.Body>
+                <Card.Body> 
                     <Card.Title>Import Source File</Card.Title>
                     <Card.Text>
                         Enter URL of train file, then import to load for analysis and training.
@@ -50,6 +49,7 @@ class Capture extends Step {
                             </Button>
                         </Row>
                     </Form>
+                   
                 </Card.Body>
             </Card>
         );

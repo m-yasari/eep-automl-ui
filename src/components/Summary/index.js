@@ -25,7 +25,7 @@ class Summary extends Step {
   
     onClickNext() {
         const { actions} = this.props;
-        actions.changeMainTab(Constants.SUMMARY_KEY);
+        actions.changeMainTab(Constants.TRAIN_KEY);
     }
 
     onReparseClick() {
@@ -148,6 +148,13 @@ class Summary extends Step {
                             variant={trainFile.apiError ? "danger" : "success"}
                             />
                     </Collapse>
+                    <Button
+                        onClick={() => this.onClickNext()}
+                        disabled={trainFile.inProgress}
+                        variant={trainFile.parsed ? "primary" : "secondary"}
+                        >
+                        Next
+                    </Button>
                 </Card.Body>
             </Card>
         );
