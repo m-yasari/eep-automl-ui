@@ -38,11 +38,9 @@ class Summary extends Step {
         actions.changeColumnType(idx, type);
     };
 
-    onFlagChange(idx, flag, target) {
+    onFlagChange(idx, evt, target) {
         const { actions } = this.props;
-        if (flag!=target) {
-            actions.changeColumnFlag(idx, flag);
-        }
+        actions.changeColumnFlag(idx, evt.target.checked);
     };
 
     onTargetChange(idx) {
@@ -67,7 +65,7 @@ class Summary extends Step {
         return (
             <Form.Check type="checkbox" aria-label="Select field to consider it as a factor." 
                 {...(flag ? "checked" : "")} 
-                onChange={(evt) => this.onFlagChange(idx, evt.target.value, target)}
+                onChange={(evt) => this.onFlagChange(idx, evt, target)}
                 />
         );
     };
@@ -82,7 +80,7 @@ class Summary extends Step {
         );
     };
 
-    renderSummaryData(cols = [], target) {
+    renderSummaryData(cols = [], selectedColumns, target) {
         let row = 0;
         const listItems = cols.map((col, idx) => (
             <tr>
@@ -90,12 +88,12 @@ class Summary extends Step {
                 <td>{col.label}</td>
                 <td>{this.renderTargetEntries(idx, target)}</td>
                 <td>{this.renderTypeEntries(idx, col.type)}</td>
-                <td>{this.renderFlagEntries(idx, !!col.flag, target)}</td>
+                <td>{this.renderFlagEntries(idx, selectedColumns.indexOf(idx)!==-1, target)}</td>
                 <td>?</td>
                 <td>{col.missing_count}</td>
                 <td>?</td>
             </tr>
-       ));
+        ));
        return (
         <tbody>{listItems}</tbody>
        );
@@ -103,7 +101,7 @@ class Summary extends Step {
 
     render() {
         const { summary, statePath, trainFile} = this.props;
-        const cols = summary.columns;
+        const cols = summary.columns, selectedColumns = summary.selectedColumns;
 
         return (
             <Card>
@@ -129,7 +127,7 @@ class Summary extends Step {
                                     <th>Outliers</th>
                                 </tr>
                             </thead>
-                            {this.renderSummaryData(cols, summary.target)}
+                            {this.renderSummaryData(cols, selectedColumns, summary.target)}
                         </Table>
                     </Form>
                     <Collapse in={summary.reparseRequired}>

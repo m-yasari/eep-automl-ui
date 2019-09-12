@@ -54,7 +54,7 @@ const apiCall = (endpoint, data, paramsObject) => {
     if (endpoint.method.toUpperCase() === 'POST') {
         const contentType = endpoint.headers['Content-Type'];
         options.body = (contentType && contentType.startsWith('application/json')) ?
-            data :
+            JSON.stringify(data) :
             mergeFormData(_.clone(endpoint.body), data);
     }
     return fetch(url, options);
@@ -96,4 +96,10 @@ export const frameSummary = (frameId, exclude_fields) => {
         params._exclude_fields = exclude_fields;
     } 
     return apiCall(endpoint, null, params);
+};
+
+export const automlBuilder = (trainData, exclude_fields) => {
+    const endpoint = endpoints['automl-builder'];
+    const params = exclude_fields ? {_exclude_fields: [...exclude_fields]} : null;
+    return apiCall(endpoint, trainData, params);
 };

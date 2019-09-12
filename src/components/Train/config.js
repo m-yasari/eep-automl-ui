@@ -36,7 +36,7 @@ export const modelsConfig = [
     },
     {
         id: 6,
-        model: 'Stack Ensembled',
+        model: 'StackedEnsemble',
         provider: 'H2O AutoML',
         info: 'Documentation',
         url: 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/stacked-ensembles.html',

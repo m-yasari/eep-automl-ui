@@ -1,5 +1,7 @@
 import * as type from './types';
-import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary } from '../api';
+import * as Constants from '../constants';
+import {modelsConfig} from '../components/Train/config';
+import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary, automlBuilder } from '../api';
 import mapDispatchToProps from './creator';
 
 export const resetState = (statePath) => (
@@ -105,21 +107,28 @@ export const selectAllModels2Train = (flag) => ({
     flag: flag
 });
 
-export const trainStart = (category) => ({
-    type: type.TRAIN_START,
-    category: category,
+export const applyTrainSettings = (data) => ({
+    type: type.TRAIN_APPLY_SETTINGS,
+    data: data
 });
 
-export const trainInProgress = (category, job) => ({
+export const trainStart = () => ({
+    type: type.TRAIN_START
+});
+
+export const trainInProgress = (job) => ({
     type: type.TRAIN_IN_PROGRESS,
-    category: category,
     job: job,
 });
 
-export const trainComplete = (category, data) => ({
+export const trainComplete = (data) => ({
     type: type.TRAIN_COMPLETED,
     data: data,
-    category: category,
+});
+
+export const trainError = (error) => ({
+    type: type.TRAIN_ERROR,
+    error: error,
 });
 
 export const reparse = (category) => (dispatch, getState) => {
@@ -275,3 +284,109 @@ const callFrameSummary = (category) => (dispatch, getState) => {
         }
     });
 }
+
+export const callAutoTrain = () => (dispatch, getState) => {
+    let frame = _.get(getState(), `dataFile.train.parsedSetupData.destination_frame`);
+    const {train, summary} = getState();
+    const algos = [];
+    modelsConfig.map((item) => {
+        if (train.models.indexOf(item.id) !== -1) {
+            algos.push(item.model);
+        }
+    });
+    const ignoredColumns = [];
+    summary.columns.map((col, idx) => {
+        if (summary.selectedColumns.indexOf(idx) === -1) {
+            ignoredColumns.push(col.label);
+        }
+    });
+    
+    const trainData = {
+        "input_spec": {
+          "training_frame": frame,
+          "response_column": summary.columns[summary.target].label,
+          //"fold_column": "${fold_column}",
+          //"weights_column": "${weights_column}",
+          "ignored_columns": ignoredColumns,
+          "sort_metric": "AUC"
+        },
+        "build_models":{
+          "include_algos": algos
+        },
+        "build_control": {
+          "nfolds": 5,
+          /*"keep_cross_validation_predictions":"${keep_cross_validation_predictions}",
+          "keep_cross_validation_models":"${keep_cross_validation_models}",
+          "keep_cross_validation_fold_assignment":"${keep_cross_validation_fold_assignment}",
+          "balance_classes":"${balance_classes}",
+          "class_sampling_factors":"${class_sampling_factors}",
+          "max_after_balance_size":"${max_after_balance_size}",
+          "export_checkpoints_dir":"${export_checkpoints_dir}",*/
+          "stopping_criteria":{
+            "seed": new Date().getTime(),
+            //"max_models":"${max_models}",
+            "max_runtime_secs": train.maxTrainTime,
+            //"stopping_rounds":"${stopping_rounds}",
+            //"stopping_tolerance":"${stopping_tolerance}"
+          },
+          "project_name": train.modelName
+        }
+    };
+    dispatch(trainStart());
+    automlBuilder(trainData).then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { // both fetching and parsing succeeded
+        dispatch(monitorTrainInProgress(json));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(trainError(`Train error: ${err.statusText}`));
+        } else {
+            dispatch(trainError(`Train error: ${err}`));
+        }
+    });
+};
+
+const monitorTrainInProgress = (parseResponse) => (dispatch, getState) => {
+    const jobId = _.get(parseResponse, 'job.key.name');
+    const id = setInterval(() => {
+        callJobStatus(jobId).then(
+            resp => {
+                console.log(resp);
+                let job = _.get(resp, 'jobs[0]');
+                dispatch(trainInProgress(job));
+                if (job.status === 'DONE') {
+                    clearInterval(id);
+                    dispatch(callTrainSummary());
+                }
+            },
+            err => {
+                clearInterval(id);
+                console.log(`Job error: ${err}!`);
+                dispatch(trainError(err));
+            }
+        )
+    }, 1000);
+};
+
+const callTrainSummary = () => (dispatch, getState) => {
+    let frame = _.get(getState(), `train.trainData.destination_frame`);
+    frameSummary(frame, 'frames/chunk_summary,frames/columns/data').then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { 
+        dispatch(trainComplete(json));
+        dispatch(changeMainTab(Constants.LEADERBOARD_KEY));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(trainError(`TrainSummary error: ${err.statusText}`));
+        } else {
+            dispatch(trainError(err));
+        }
+    });
+}
+

@@ -40,6 +40,38 @@ export const train = (state = {}, action) => {
                 models: models
             });
             break;
+        case type.TRAIN_APPLY_SETTINGS:
+            state = Object.assign({}, state, action.data);
+            break;
+        case type.TRAIN_START:
+            state  = Object.assign({}, state, {
+                inProgress: true,
+                progress: 0,
+                progressMsg: '',
+                trained: false,
+                trainData: null,
+            });
+            break;
+        case type.TRAIN_IN_PROGRESS:
+            state  = Object.assign({}, state, {
+                progress: Math.round(action.job.progress * 100),
+                progressMsg: action.job.progress_msg,
+            });
+            break;
+        case type.TRAIN_COMPLETED:
+            state  = Object.assign({}, state, {
+                inProgress: false,
+                trained: true,
+                trainData: action.data,
+            });
+            break;
+        case type.TRAIN_ERROR:
+            state  = Object.assign({}, state, {
+                inProgress: false,
+                trained: false,
+                apiError: action.error,
+            });
+            break;
     }
     return state;
 }

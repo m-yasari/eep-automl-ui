@@ -6,13 +6,11 @@ const getColumnsSpec = (parsedData) => {
     const columns = _.get(parsedData, 'frames[0].columns', []);
 
     const cols = [];
-    const listItems = columns.map((col) => {
+    columns.map((col) => {
         cols.push({
             label: col.label,
             type: Constants.colType2Type(col.type),
-            missing_count: col.missing_count,
-            flag: false,
-            output: false
+            missing_count: col.missing_count
         });
     });
 
@@ -40,13 +38,16 @@ export const summary = (state = {}, action) => {
             });
             break;
         case type.CHANGE_COLUMN_FLAG:
-            col = _.clone(state.columns[action.column]);
-            col.flag = action.flag;
+            const selectedColumns = [...state.selectedColumns];
+            let idx = selectedColumns.indexOf(action.column);
 
-            cols = _.clone(state.columns);
-            cols[action.column] = col;
+            if (action.flag && idx===-1 && action.column!==state.target) {
+                selectedColumns.push(action.column);
+            } else if (!action.flag && idx!==-1) {
+                selectedColumns.splice(idx, 1);
+            }
             state = Object.assign({}, state, {
-                columns: cols
+                selectedColumns: selectedColumns
             });
             break;
         case type.CHANGE_TARGET_COLUMN:

@@ -15,6 +15,7 @@ const initialState = {
     },
     summary: {
         columns: [],
+        selectedColumns: [],
         reparseRequired: false,
         disableSummaryTab: true
     },
@@ -54,6 +55,15 @@ const initialState = {
         showPopup: false,
         disableTrainTab: true,
         models: [],
+        maxTrainTime: 3600,
+        modelName: 'default',
+
+        inProgress: false,
+        trained: false,
+        progress: 0,
+        progressMsg: null,
+        apiError: null,
+        trainData: null,
     }
 };
 

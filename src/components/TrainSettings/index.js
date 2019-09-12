@@ -19,6 +19,22 @@ class TrainSettings extends Step{
 
     constructor(props, context){
         super(props, context);
+        this.modelNameInput = React.createRef();
+        this.maxTrainTimeInput = React.createRef();
+    }
+
+    onApplyClick() {
+        const { actions } = this.props;
+
+        let maxTrainTime = 3600;
+        try {
+            maxTrainTime = parseInt(this.maxTrainTimeInput.current.value);
+            //TODO: validate modelName value
+        } catch(e) {}
+        actions.applyTrainSettings({
+            maxTrainTime: maxTrainTime,
+            modelName: this.modelNameInput.current.value
+        });
     }
 
     render() {
@@ -34,33 +50,39 @@ class TrainSettings extends Step{
                     <Modal.Title>Train - setting</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <Form.Group>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>Setting</th>
-                                <th>Default</th>
                                 <th>Value</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Project name (h2o)</td>
-                                <td>AutoML_20190809003012</td>
-                                <td></td>
+                                <td>Project name (H2O)</td>
+                                <td>
+                                    <Form.Control type="input"
+                                        name="modelNameInput"
+                                        ref={this.modelNameInput} 
+                                        maxLength="60" defaultValue={train.modelName}
+                                    />
+                                </td>
                             </tr>
                             <tr>
-                                <td>Max models (h2o)</td>
+                                <td>Max training run time (H2O) - seconds</td>
                                 <td>
-                                    <Form.Group controlId="Select">
-                                        <Form.Control as="select">
-                                            <option>Yes</option>
-                                            <option>No</option>
-                                        </Form.Control>
-                                    </Form.Group>
+                                    <Form.Control type="input"
+                                        name="maxTrainTimeInput"
+                                        ref={this.maxTrainTimeInput} 
+                                        maxLength="6" defaultValue={train.maxTrainTime}
+                                    />
                                 </td>
                             </tr>
                         </tbody>
                     </Table>
+                    </Form.Group>
+                    <Button variant="primary" onClick={() => this.onApplyClick()}>Apply</Button>
                 </Modal.Body>
             </Modal>
         );
