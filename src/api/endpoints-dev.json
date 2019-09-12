@@ -101,7 +101,7 @@
         },
         "body": {
             "input_spec": {
-              "training_frame":"${trainig_frame}",
+              "training_frame":"${training_frame}",
               "response_column":"${response_column}",
               "fold_column":"${fold_column}",
               "weights_column":"${weights_column}",

@@ -11,6 +11,8 @@ import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
 import * as _ from 'lodash';
 import Table from 'react-bootstrap/Table';
+import Collapse from 'react-bootstrap/Collapse';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TrainSettings from '../TrainSettings';
 import { modelsConfig, columnsHeader } from './config';
@@ -31,10 +33,10 @@ class Train extends Step{
      * Method on click of Start Training button
      */
     onClickNext() {
-        const { actions, trainFile } = this.props;
-        actions.changeMainTab(Constants.LEADERBOARD_KEY);
+        const { actions, train } = this.props;
         actions.setDisableSummaryFlag(false);
         actions.setDisableTrainFlag(false);
+        actions.callAutoTrain();
     }
 
     /**
@@ -88,7 +90,6 @@ class Train extends Step{
     }
     
     renderTrainHeader(columnsHeader) {
-        const {train} = this.props;
         return (
             <thead>
                 <tr>
@@ -117,7 +118,6 @@ class Train extends Step{
     }
 
     renderTrainData(columnsHeader, models) {
-        const {train} = this.props;
         const listItems = models.map((row, rowIndex) => {
             const selected = this.isSelected(row);
             return (
@@ -156,6 +156,7 @@ class Train extends Step{
     }
 
     render() {
+        const {train} = this.props;
         const handleClose = this.handleClose;
 
         return (
@@ -173,7 +174,14 @@ class Train extends Step{
                                 {this.renderTrainData(columnsHeader, modelsConfig)}
                             </Table>
                         </Form>
-                        <Button onClick={() => this.onClickNext()} disabled={!this.isAnySelected()}>
+                        <Collapse in={train.inProgress}>
+                            <ProgressBar animated="true"
+                                now={train.progress} 
+                                label={`${train.progress}%`}
+                                variant={train.apiError ? "danger" : "success"}
+                                />
+                        </Collapse>
+                        <Button onClick={() => this.onClickNext()} disabled={!this.isAnySelected() || train.inProgress}>
                             Start Training
                         </Button>
                     </Card.Body>
