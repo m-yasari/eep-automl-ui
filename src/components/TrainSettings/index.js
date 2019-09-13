@@ -19,7 +19,7 @@ class TrainSettings extends Step{
 
     constructor(props, context){
         super(props, context);
-        this.modelNameInput = React.createRef();
+        this.projectNameInput = React.createRef();
         this.maxTrainTimeInput = React.createRef();
     }
 
@@ -29,11 +29,11 @@ class TrainSettings extends Step{
         let maxTrainTime = 3600;
         try {
             maxTrainTime = parseInt(this.maxTrainTimeInput.current.value);
-            //TODO: validate modelName value
+            //TODO: validate projectName value
         } catch(e) {}
         actions.applyTrainSettings({
             maxTrainTime: maxTrainTime,
-            modelName: this.modelNameInput.current.value
+            projectName: this.projectNameInput.current.value
         });
     }
 
@@ -63,9 +63,9 @@ class TrainSettings extends Step{
                                 <td>Project name (H2O)</td>
                                 <td>
                                     <Form.Control type="input"
-                                        name="modelNameInput"
-                                        ref={this.modelNameInput} 
-                                        maxLength="60" defaultValue={train.modelName}
+                                        name="projectNameInput"
+                                        ref={this.projectNameInput} 
+                                        maxLength="60" defaultValue={train.projectName}
                                     />
                                 </td>
                             </tr>

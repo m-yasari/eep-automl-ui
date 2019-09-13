@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as _ from 'lodash';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -11,97 +12,38 @@ import Table from 'react-bootstrap/Table';
 import FontAwesomne from '@fortawesome/react-fontawesome';
 import TrainSettings from '../TrainSettings';
 import CustomButton from '../CustomButton/index';
+import { columnsHeader } from './config';
 
 const mapStateToProps = state => {
-    return ({ leaderboard: state.leaderboard, train: state.train, trainFile: state.dataFile.train});
+    return ({ train: state.train});
 }
  
 class Leaderboard extends Step{
 
     constructor(props, context){
         super(props, context);
-        this.state = {
-    columnHeader : [
-
-        {
-            columnName: 'Models',
-            columnType: 'link',
-            sortable: false
-        },
-        {
-            columnName: 'AUC',
-            columnType: 'number',
-            sortable: false
-        },
-        {
-            columnName: 'Accuracy',
-            columnType: 'number',
-            sortable: false
-        },
-        {
-            columnName: 'F1-score',
-            columnType: 'number',
-            sortable: false
-        }
-    ],
-    dummyData : [
-        {
-            'Models': 'DRF_ABCD_XYZ_123456',
-            'AUC': 0.9212,
-            'Accuracy': 0.8909,
-            'F1-score' : 0.9590,
-        },
-        {
-            'Models': 'GLM_ABCD_XYZ_123456',
-            'AUC': 0.9212,
-            'Accuracy': 0.8909,
-            'F1-score' : 0.9590,
-        },
-        {
-            'Models': 'XGBoost_ABCD_XYZ_123456',
-            'AUC': 0.9212,
-            'Accuracy': 0.8909,
-            'F1-score' : 0.9590,
-        },
-        {
-            'Models': 'GBM_ABCD_XYZ_123456',
-            'AUC': 0.9212,
-            'Accuracy': 0.8909,
-            'F1-score' : 0.9590,
-        },
-        {
-            'Models': 'DL_ABCD_XYZ_123456',
-            'AUC': 0.9212,
-            'Accuracy': 0.8909,
-            'F1-score' : 0.9590,
-        },
-        {
-            'Models': 'SE_ABCD_XYZ_123456',
-            'AUC': 0.9212,
-            'Accuracy': 0.8909,
-            'F1-score' : 0.9590,
-        },
-        {
-            'Models': 'GLM_AKTK_XYZ_190',
-            'AUC': 0.9212,
-            'Accuracy': 0.8909,
-            'F1-score' : 0.9590,
-        },
-    ]
-}
     }
 
     /**
      * Method to go to the specific link on click of Documentation
      */
-    onClickLink(e, row){
-        window.location.href = row.Link;
+    onClickLink(e, name){
+        window.open(`/model/${name}`, name);
+    }
+
+    /**
+    * @param num The number to round
+    * @param precision The number of decimal places to preserve
+    */
+    roundUp(num, precision) {
+        precision = Math.pow(10, precision)
+        return Math.ceil(num * precision) / precision
     }
 
     render() {
 
-        const {train, actions} = this.props
-        const {columnHeader, dummyData} = this.state;
+        const { train, actions} = this.props
+        const leaderboard = _.get(train, "trainData.leaderboard_table.data", [[]]);
         /*<CustomButton onClick={() => this.onClickInfo()}>
             <FontAwesomne name='cog' size='2x' style = {{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)', float: 'right'}} />
         </CustomButton>*/
@@ -116,41 +58,36 @@ class Leaderboard extends Step{
                             <Table striped border hover>
                                 <thead>
                                     <tr>
-                                        {columnHeader.map((columnHead, index) => {
-                                                return (
-                                                    <th key={index}>{columnHead.columnName}</th>
-                                                );
-                                        })}
+                                        {columnsHeader.map((columnHead, index) => (
+                                            <th key={index}>{columnHead.name}</th>
+                                        ))}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {
-                                        dummyData.map((row, rowIndex) => {
+                                    { leaderboard[0].map((row, rowIndex) => (
+                                        <tr key={rowIndex}>
+                                            { columnsHeader.map((column, columnIndex) => {
+                                                switch(column.type){
 
-                                            return(
-                                                <tr key = {rowIndex}>
-                                                    {
-                                                        columnHeader.map((column, columnIndex) => {
-                                                            switch(column.columnType){
+                                                    case 'link' :
+                                                        return (
+                                                            <td key={columnIndex}>
+                                                                <Button class="btn btn-link" 
+                                                                    onClick={(e) => this.onClickLink(e, leaderboard[column.colNum][rowIndex])}>
+                                                                    {leaderboard[column.colNum][rowIndex]}
+                                                                </Button>
+                                                            </td>
+                                                        );
 
-                                                                case 'link' :
-                                                                    return (
-                                                                        <td key={columnIndex}>
-                                                                            <Button class="btn btn-link" onClick={(e) => this.onClickLink(e, row)}>{row[column.columnName]}</Button>
-                                                                        </td>
-                                                                    );
-                                                                    break;
+                                                    case 'number' :
+                                                        return (<td key={columnIndex}>{this.roundUp(leaderboard[column.colNum][rowIndex], 4)}</td>);
 
-                                                                default:
-                                                                    return (<td key={columnIndex}>{row[column.columnName]}</td>);
-                                                                    break;
-                                                            }
-                                                        })
-                                                    }
-                                                </tr>
-                                            );
-                                        })
-                                    }
+                                                    default:
+                                                        return (<td key={columnIndex}>{leaderboard[column.colNum][rowIndex]}</td>);
+                                                }
+                                            }) }
+                                        </tr>
+                                    )) }
                                 </tbody>
                             </Table>
                         </Form>

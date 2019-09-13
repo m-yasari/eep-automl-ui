@@ -135,5 +135,15 @@
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
+    },
+    "automl-leaderboard": {
+        "method": "GET",
+        "url": "/api/99/AutoML/{project_name}",
+        "params": {
+            "_exclude_fields": "$"
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
     }
 }
