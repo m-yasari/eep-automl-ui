@@ -56,7 +56,7 @@ const initialState = {
         disableTrainTab: true,
         models: [],
         maxTrainTime: 3600,
-        modelName: 'default',
+        projectName: 'default',
 
         inProgress: false,
         trained: false,

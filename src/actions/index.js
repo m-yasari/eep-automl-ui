@@ -1,7 +1,8 @@
 import * as type from './types';
 import * as Constants from '../constants';
 import {modelsConfig} from '../components/Train/config';
-import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary, automlBuilder } from '../api';
+import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary, 
+    automlBuilder, automlLeaderboard } from '../api';
 import mapDispatchToProps from './creator';
 
 export const resetState = (statePath) => (
@@ -296,7 +297,7 @@ export const callAutoTrain = () => (dispatch, getState) => {
     });
     const ignoredColumns = [];
     summary.columns.map((col, idx) => {
-        if (summary.selectedColumns.indexOf(idx) === -1) {
+        if (idx !== summary.target && summary.selectedColumns.indexOf(idx) === -1) {
             ignoredColumns.push(col.label);
         }
     });
@@ -329,7 +330,7 @@ export const callAutoTrain = () => (dispatch, getState) => {
             //"stopping_rounds":"${stopping_rounds}",
             //"stopping_tolerance":"${stopping_tolerance}"
           },
-          "project_name": train.modelName
+          "project_name": train.projectName
         }
     };
     dispatch(trainStart());
@@ -372,8 +373,8 @@ const monitorTrainInProgress = (parseResponse) => (dispatch, getState) => {
 };
 
 const callTrainSummary = () => (dispatch, getState) => {
-    let frame = _.get(getState(), `train.trainData.destination_frame`);
-    frameSummary(frame, 'frames/chunk_summary,frames/columns/data').then(resp => {
+    let projectName = _.get(getState(), `train.projectName`);
+    automlLeaderboard(projectName, 'event_log,event_log_table').then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
         }

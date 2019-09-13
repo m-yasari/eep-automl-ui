@@ -103,3 +103,9 @@ export const automlBuilder = (trainData, exclude_fields) => {
     const params = exclude_fields ? {_exclude_fields: [...exclude_fields]} : null;
     return apiCall(endpoint, trainData, params);
 };
+
+export const automlLeaderboard = (project_name) => {
+    const endpoint = endpoints['automl-leaderboard'];
+    const params = {project_name: project_name};
+    return apiCall(endpoint, null, params);
+};
