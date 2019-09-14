@@ -10,7 +10,9 @@ const getColumnsSpec = (parsedData) => {
         cols.push({
             label: col.label,
             type: Constants.colType2Type(col.type),
-            missing_count: col.missing_count
+            missing_count: col.missing_count,
+            mean: col.mean,
+            sigma: col.sigma,
         });
     });
 

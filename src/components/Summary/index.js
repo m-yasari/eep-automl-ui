@@ -18,6 +18,15 @@ const mapStateToProps = state => {
     return ({ summary: state.summary, trainFile: state.dataFile.train });
 }
 
+/**
+* @param num The number to round
+* @param precision The number of decimal places to preserve
+*/
+const roundUp = (num, precision) => {
+    precision = Math.pow(10, precision)
+    return Math.ceil(num * precision) / precision
+};
+
 class Summary extends Step {
     constructor(props, context) {
         super(props, context);
@@ -91,7 +100,8 @@ class Summary extends Step {
                 <td>{this.renderFlagEntries(idx, selectedColumns.indexOf(idx)!==-1, target)}</td>
                 <td>?</td>
                 <td>{col.missing_count}</td>
-                <td>?</td>
+                <td>{roundUp(col.mean, 3)}</td>
+                <td>{roundUp(col.sigma, 3)}</td>
             </tr>
         ));
        return (
@@ -124,7 +134,8 @@ class Summary extends Step {
                                     <th>Flag</th>
                                     <th>Unique</th>
                                     <th>Missing</th>
-                                    <th>Outliers</th>
+                                    <th>Mean</th>
+                                    <th>Sigma</th>
                                 </tr>
                             </thead>
                             {this.renderSummaryData(cols, selectedColumns, summary.target)}
