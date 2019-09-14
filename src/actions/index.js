@@ -265,7 +265,7 @@ const callJobStatus = (job) => {
             }
         }
     )});
-}
+};
 
 const callFrameSummary = (category) => (dispatch, getState) => {
     let frame = _.get(getState(), `dataFile.${category}.parsedSetupData.destination_frame`);
@@ -284,9 +284,9 @@ const callFrameSummary = (category) => (dispatch, getState) => {
             dispatch(importDataFileDone(category, err));
         }
     });
-}
+};
 
-export const callAutoTrain = () => (dispatch, getState) => {
+const prepareAutoTrainReqPayload = (getState) => {
     let frame = _.get(getState(), `dataFile.train.parsedSetupData.destination_frame`);
     const {train, summary} = getState();
     const algos = [];
@@ -333,6 +333,15 @@ export const callAutoTrain = () => (dispatch, getState) => {
           "project_name": train.projectName
         }
     };
+    if (train.maxModelNumbers) {
+        _.set(trainData, "build_control.stopping_criteria.max_models", train.maxModelNumbers);
+    }
+    return trainData;
+};
+
+export const callAutoTrain = () => (dispatch, getState) => {
+    const trainData = prepareAutoTrainReqPayload(getState);
+
     dispatch(trainStart());
     automlBuilder(trainData).then(resp => {
         if (!resp.ok) {

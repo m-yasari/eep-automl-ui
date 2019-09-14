@@ -21,9 +21,10 @@ class TrainSettings extends Step{
         super(props, context);
         this.projectNameInput = React.createRef();
         this.maxTrainTimeInput = React.createRef();
+        this.maxModelNumbersInput = React.createRef();
     }
 
-    onApplyClick() {
+    onSaveClick() {
         const { actions } = this.props;
 
         let maxTrainTime = 3600;
@@ -31,10 +32,16 @@ class TrainSettings extends Step{
             maxTrainTime = parseInt(this.maxTrainTimeInput.current.value);
             //TODO: validate projectName value
         } catch(e) {}
+        let maxModelNumbers = null;
+        try {
+            maxModelNumbers = parseInt(this.maxModelNumbersInput.current.value);
+        } catch(e) {}
         actions.applyTrainSettings({
             maxTrainTime: maxTrainTime,
-            projectName: this.projectNameInput.current.value
+            projectName: this.projectNameInput.current.value,
+            maxModelNumbers: maxModelNumbers
         });
+        actions.openSettingsTrain(false);
     }
 
     render() {
@@ -56,6 +63,7 @@ class TrainSettings extends Step{
                             <tr>
                                 <th>Setting</th>
                                 <th>Value</th>
+                                <th>Unit</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,9 +76,21 @@ class TrainSettings extends Step{
                                         maxLength="60" defaultValue={train.projectName}
                                     />
                                 </td>
+                                <td></td>
                             </tr>
                             <tr>
-                                <td>Max training run time (H2O) - seconds</td>
+                                <td>Maximum number of models (H2O)</td>
+                                <td>
+                                    <Form.Control type="input"
+                                        name="maxModelNumbersInput"
+                                        ref={this.maxModelNumbersInput} 
+                                        maxLength="2" defaultValue={train.maxModelNumbers || ""}
+                                    />
+                                </td>
+                                <td>nos</td>
+                            </tr>
+                            <tr>
+                                <td>Max training run time (H2O)</td>
                                 <td>
                                     <Form.Control type="input"
                                         name="maxTrainTimeInput"
@@ -78,11 +98,12 @@ class TrainSettings extends Step{
                                         maxLength="6" defaultValue={train.maxTrainTime}
                                     />
                                 </td>
+                                <td>secs</td>
                             </tr>
                         </tbody>
                     </Table>
                     </Form.Group>
-                    <Button variant="primary" onClick={() => this.onApplyClick()}>Apply</Button>
+                    <Button variant="primary" onClick={() => this.onSaveClick()}>Save</Button>
                 </Modal.Body>
             </Modal>
         );
