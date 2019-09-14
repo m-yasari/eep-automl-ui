@@ -22,6 +22,7 @@ class TrainSettings extends Step{
         this.projectNameInput = React.createRef();
         this.maxTrainTimeInput = React.createRef();
         this.maxModelNumbersInput = React.createRef();
+        this.maxTrainTimePerModelInput = React.createRef();
     }
 
     onSaveClick() {
@@ -34,12 +35,21 @@ class TrainSettings extends Step{
         } catch(e) {}
         let maxModelNumbers = null;
         try {
-            maxModelNumbers = parseInt(this.maxModelNumbersInput.current.value);
+            if (this.maxModelNumbersInput.current.value !== "") {
+                maxModelNumbers = parseInt(this.maxModelNumbersInput.current.value);
+            }
+        } catch(e) {}
+        let maxTrainTimePerModel = null;
+        try {
+            if (this.maxTrainTimePerModelInput.current.value !== "") {
+                maxTrainTimePerModel = parseInt(this.maxTrainTimePerModelInput.current.value);
+            }
         } catch(e) {}
         actions.applyTrainSettings({
             maxTrainTime: maxTrainTime,
             projectName: this.projectNameInput.current.value,
-            maxModelNumbers: maxModelNumbers
+            maxModelNumbers: maxModelNumbers,
+            maxTrainTimePerModel: maxTrainTimePerModel,
         });
         actions.openSettingsTrain(false);
     }
@@ -96,6 +106,17 @@ class TrainSettings extends Step{
                                         name="maxTrainTimeInput"
                                         ref={this.maxTrainTimeInput} 
                                         maxLength="6" defaultValue={train.maxTrainTime}
+                                    />
+                                </td>
+                                <td>secs</td>
+                            </tr>
+                            <tr>
+                                <td>Max training run time per model (H2O)</td>
+                                <td>
+                                    <Form.Control type="input"
+                                        name="maxTrainTimePerModelInput"
+                                        ref={this.maxTrainTimePerModelInput} 
+                                        maxLength="6" defaultValue={train.maxTrainTimePerModel || ""}
                                     />
                                 </td>
                                 <td>secs</td>
