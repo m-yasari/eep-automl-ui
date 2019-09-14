@@ -11,10 +11,6 @@ export const train = (state = {}, action) => {
             _.set(state, "showPopup", action.showPopup);
             break;
 
-        case type.DISABLE_TRAIN_TAB:
-            state = _.clone(state);
-            _.set(state, "disableTrainTab", action.disableTrainTab);
-            break;
         case type.TRAIN_SELECT_ALL_MODELS:
             models = [];
             if (action.flag) {

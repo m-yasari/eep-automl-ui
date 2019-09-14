@@ -5,12 +5,12 @@ import mapDispatchToProps from '../../actions/creator';
 import { Tabs, Tab } from 'react-bootstrap';
 import Capture from '../Capture';
 import Summary from '../Summary';
-import Step from '../Step';
 import * as Constants from '../../constants';
 import Train from '../Train';
 import Leaderboard from '../Leaderboard';
+import Predict from '../Predict';
 
-const mapStateToProps = state => ({ main: state.main, summary: state.summary, train: state.train });
+const mapStateToProps = state => ({ main: state.main });
 
 class Main extends React.Component {
     constructor(props, context) {
@@ -31,14 +31,17 @@ class Main extends React.Component {
                 <Tab eventKey={Constants.CAPTURE_KEY} title="Capture">
                     <Capture statePath='capture' />
                 </Tab>
-                <Tab eventKey={Constants.SUMMARY_KEY} title="Summary" disabled={summary.disableSummaryTab}>
+                <Tab eventKey={Constants.SUMMARY_KEY} title="Summary" disabled={main.disableSummaryTab}>
                     <Summary statePath='summary' />
                 </Tab>
-                <Tab eventKey={Constants.TRAIN_KEY} title="Train" disabled={train.disableTrainTab}>
+                <Tab eventKey={Constants.TRAIN_KEY} title="Train" disabled={main.disableTrainTab}>
                     <Train statePath='train' />
                 </Tab>
-                <Tab eventKey={Constants.LEADERBOARD_KEY} title="Leaderboard" disabled>
+                <Tab eventKey={Constants.LEADERBOARD_KEY} title="Leaderboard" disabled={main.disableLeaderboardTab}>
                     <Leaderboard statePath='leaderboard' />
+                </Tab>
+                <Tab eventKey={Constants.PREDICT_KEY} title="Predict" disabled={main.disablePredictTab}>
+                    <Predict statePath='predict' />
                 </Tab>
             </Tabs>
         );

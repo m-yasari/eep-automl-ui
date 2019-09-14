@@ -23,9 +23,13 @@ export const changeState = (statePath, val, attr = null) => (
 
 export const changeMainTab = (activeKey) => ({ type: type.CHANGE_MAIN_TAB, activeKey: activeKey });
 
-export const setDisableSummaryFlag = (disableSummaryTab) => ({ type: type.DISABLE_SUMMARY_TAB, disableSummaryTab: disableSummaryTab});
+export const setDisableSummaryFlag = (flag) => ({ type: type.DISABLE_SUMMARY_TAB, flag: flag});
 
-export const setDisableTrainFlag = (disableTrainTab) => ({ type: type.DISABLE_TRAIN_TAB, disableTrainTab: disableTrainTab});
+export const setDisableTrainFlag = (flag) => ({ type: type.DISABLE_TRAIN_TAB, flag: flag});
+
+export const setDisableLeaderboardFlag = (flag) => ({ type: type.DISABLE_LEADERBOARD_TAB, flag: flag});
+
+export const setDisablePredictFlag = (flag) => ({ type: type.DISABLE_PREDICT_TAB, flag: flag});
 
 export const openSettingsTrain = (showPopup) => ({ type: type.OPEN_SETTINGS_TRAIN, showPopup: showPopup});
 
@@ -130,6 +134,11 @@ export const trainComplete = (data) => ({
 export const trainError = (error) => ({
     type: type.TRAIN_ERROR,
     error: error,
+});
+
+export const selectModelForPredict = (model) => ({
+    type: type.PREDICT_MODEL_SELECT,
+    model: model,
 });
 
 export const reparse = (category) => (dispatch, getState) => {
@@ -394,6 +403,7 @@ const callTrainSummary = () => (dispatch, getState) => {
     }).then((json) => { 
         dispatch(trainComplete(json));
         dispatch(changeMainTab(Constants.LEADERBOARD_KEY));
+        dispatch(setDisableLeaderboardFlag(false));
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
             dispatch(trainError(`TrainSummary error: ${err.statusText}`));

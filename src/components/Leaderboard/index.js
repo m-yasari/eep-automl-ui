@@ -34,15 +34,10 @@ class Leaderboard extends Step{
     }
 
     predictTestData(evt, modelName) {
-        alert(`Predict with '${modelName}'`);
-    }
-
-    downloadMojo(evt, modelName) {
-        alert(`Download MOJO of '${modelName}'`);
-    }
-
-    downloadPojo(evt, modelName) {
-        alert(`Download POJO of '${modelName}'`);
+        const { actions } = this.props
+        actions.selectModelForPredict(modelName);
+        actions.setDisablePredictFlag(false);
+        actions.changeMainTab(Constants.PREDICT_KEY);
     }
 
     renderModelDropdown(modelName) {

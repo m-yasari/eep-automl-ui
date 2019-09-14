@@ -34,8 +34,6 @@ class Train extends Step{
      */
     onClickNext() {
         const { actions, train } = this.props;
-        actions.setDisableSummaryFlag(false);
-        actions.setDisableTrainFlag(false);
         actions.callAutoTrain();
     }
 
