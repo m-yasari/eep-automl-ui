@@ -9,9 +9,9 @@ import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
 import Table from 'react-bootstrap/Table';
-import FontAwesomne from '@fortawesome/react-fontawesome';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 import TrainSettings from '../TrainSettings';
-import CustomButton from '../CustomButton/index';
 import { columnsHeader } from './config';
 
 const mapStateToProps = state => {
@@ -38,6 +38,28 @@ class Leaderboard extends Step{
     roundUp(num, precision) {
         precision = Math.pow(10, precision)
         return Math.ceil(num * precision) / precision
+    }
+
+    predictTestData(evt, modelName) {
+        alert(`Predict with ${modelName}`);
+    }
+
+    downloadMojo(evt, modelName) {
+        alert(`Download MOJO of ${modelName}`);
+    }
+
+    downloadPojo(evt, modelName) {
+        alert(`Download POJO of ${modelName}`);
+    }
+
+    renderModelDropdown(modelName) {
+        return (
+        <DropdownButton title={modelName}>
+            <Dropdown.Item onClick={(e) => this.predictTestData(e, modelName)}>Predict on a test data</Dropdown.Item>
+            <Dropdown.Item onClick={(e) => this.downloadMojo(e, modelName)}>Download MOJO format</Dropdown.Item>
+            <Dropdown.Item onClick={(e) => this.downloadPojo(e, modelName)}>Download POJO format</Dropdown.Item>
+        </DropdownButton>
+        );
     }
 
     render() {
@@ -72,10 +94,7 @@ class Leaderboard extends Step{
                                                     case 'link' :
                                                         return (
                                                             <td key={columnIndex}>
-                                                                <Button class="btn btn-link" 
-                                                                    onClick={(e) => this.onClickLink(e, leaderboard[column.colNum][rowIndex])}>
-                                                                    {leaderboard[column.colNum][rowIndex]}
-                                                                </Button>
+                                                                {this.renderModelDropdown(leaderboard[column.colNum][rowIndex])}
                                                             </td>
                                                         );
 
