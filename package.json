@@ -21,8 +21,8 @@
   "homepage": "https://github.com/m-yasari/eep-automl-ui#readme",
   "dependencies": {
     "babel-core": "^6.26.3",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
