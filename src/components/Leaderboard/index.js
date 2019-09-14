@@ -50,7 +50,8 @@ class Leaderboard extends Step{
         <DropdownButton title={modelName}>
             <Dropdown.Item onClick={(e) => this.predictTestData(e, modelName)}>Predict on a test data</Dropdown.Item>
             <Dropdown.Item onClick={(e) => this.downloadMojo(e, modelName)}>Download MOJO format</Dropdown.Item>
-            <Dropdown.Item onClick={(e) => this.downloadPojo(e, modelName)}>Download POJO format</Dropdown.Item>
+            <Dropdown.Item href={`/api/3/Models.java/${modelName}`} 
+                disabled={modelName.search("StackedEnsemble")===-1 ? false : true}>Download POJO format</Dropdown.Item>
         </DropdownButton>
         );
     }
