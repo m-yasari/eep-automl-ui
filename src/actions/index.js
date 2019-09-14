@@ -316,8 +316,8 @@ const prepareAutoTrainReqPayload = (getState) => {
         },
         "build_control": {
           "nfolds": 5,
-          /*"keep_cross_validation_predictions":"${keep_cross_validation_predictions}",
-          "keep_cross_validation_models":"${keep_cross_validation_models}",
+          "keep_cross_validation_predictions": false,
+          /*"keep_cross_validation_models":"${keep_cross_validation_models}",
           "keep_cross_validation_fold_assignment":"${keep_cross_validation_fold_assignment}",
           "balance_classes":"${balance_classes}",
           "class_sampling_factors":"${class_sampling_factors}",
@@ -335,6 +335,9 @@ const prepareAutoTrainReqPayload = (getState) => {
     };
     if (train.maxModelNumbers) {
         _.set(trainData, "build_control.stopping_criteria.max_models", train.maxModelNumbers);
+    }
+    if (train.maxTrainTimePerModel) {
+        _.set(trainData, "build_control.stopping_criteria.max_runtime_secs_per_model", train.maxTrainTimePerModel);
     }
     return trainData;
 };
