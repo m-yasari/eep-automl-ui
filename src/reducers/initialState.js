@@ -5,6 +5,10 @@ const initialState = {
     // initialState
     main: {
         activeKey: Constants.CAPTURE_KEY,
+        disableTrainTab: true,
+        disableSummaryTab: true,
+        disableLeaderboardTab: true,
+        disablePredictTab: true,
     },
     capture: {
         validated: false,
@@ -17,7 +21,6 @@ const initialState = {
         columns: [],
         selectedColumns: [],
         reparseRequired: false,
-        disableSummaryTab: true
     },
     dataFile: {
         train: {
@@ -53,7 +56,6 @@ const initialState = {
     },
     train: {
         showPopup: false,
-        disableTrainTab: true,
         models: [],
         maxTrainTime: 3600,
         projectName: 'default',
@@ -64,6 +66,15 @@ const initialState = {
         progressMsg: null,
         apiError: null,
         trainData: null,
+    },
+    predict: {
+        model: null,
+        inProgress: false,
+        predicted: false,
+        progress: 0,
+        progressMsg: null,
+        apiError: null,
+        predictData: null,
     }
 };
 

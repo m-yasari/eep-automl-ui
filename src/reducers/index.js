@@ -7,6 +7,7 @@ import {capture} from '../components/Capture/reducer';
 import {summary} from '../components/Summary/reducer';
 import {dataFile} from '../components/DataFile/reducer';
 import {train} from '../components/Train/reducer';
+import {predict} from '../components/Predict/reducer';
 
 const resetStateReducer = (state = {}, action) => {
     state = _.clone(state);
@@ -37,7 +38,8 @@ const reducer = combineReducers({
     capture,
     summary,
     dataFile,
-    train
+    train,
+    predict
 });
 
 export default () => (state, action) => {

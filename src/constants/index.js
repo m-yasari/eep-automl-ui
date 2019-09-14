@@ -3,6 +3,7 @@ export const CAPTURE_KEY = 'capture';
 export const SUMMARY_KEY = 'summary';
 export const TRAIN_KEY = 'train';
 export const LEADERBOARD_KEY = 'leaderboard';
+export const PREDICT_KEY = 'predict';
 
 export const TRAIN_DATA = 'train';
 export const TEST_DATA = 'test';

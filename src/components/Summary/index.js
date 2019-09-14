@@ -35,6 +35,7 @@ class Summary extends Step {
     onClickNext() {
         const { actions} = this.props;
         actions.changeMainTab(Constants.TRAIN_KEY);
+        actions.setDisableTrainFlag(false);
     }
 
     onReparseClick() {
