@@ -1,47 +1,3 @@
-export const modelsConfig = [
-    {
-        id: 1,
-        model: 'DRF',
-        provider: 'H2O AutoML',
-        info: 'Documentation',
-        url : 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/drf.html',
-    },
-    {
-        id: 2,
-        model: 'GLM',
-        provider: 'H2O AutoML',
-        info: 'Documentation',
-        url: 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/glm.html',
-    },
-    {
-        id: 3,
-        model: 'XGBoost',
-        provider: 'H2O AutoML',
-        info: 'Documentation',
-        url: 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/xgboost.html',
-    },
-    {
-        id: 4,
-        model: 'GBM',
-        provider: 'H2O AutoML',
-        info: 'Documentation',
-        url: 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/gbm.html',
-    },
-    {
-        id: 5,
-        model: 'DeepLearning',
-        provider: 'H2O AutoML',
-        info: 'Documentation',
-        url: 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/deep-learning.html',
-    },
-    {
-        id: 6,
-        model: 'StackedEnsemble',
-        provider: 'H2O AutoML',
-        info: 'Documentation',
-        url: 'http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/stacked-ensembles.html',
-    }
-];
 
 export const columnsHeader = [
     {
@@ -57,15 +13,15 @@ export const columnsHeader = [
         sortable: false
     },
     {
-        name: 'Accuracy',
+        name: 'Logloss',
         type: 'number',
-        colNum: 4,
+        colNum: 3,
         sortable: false
     },
     {
-        name: 'F1-score',
+        name: 'Mean per class err',
         type: 'number',
-        colNum: 5,
+        colNum: 4,
         sortable: false
     }
 ];
