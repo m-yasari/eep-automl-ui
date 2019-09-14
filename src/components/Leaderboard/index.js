@@ -25,13 +25,6 @@ class Leaderboard extends Step{
     }
 
     /**
-     * Method to go to the specific link on click of Documentation
-     */
-    onClickLink(e, name){
-        window.open(`/model/${name}`, name);
-    }
-
-    /**
     * @param num The number to round
     * @param precision The number of decimal places to preserve
     */
@@ -41,15 +34,15 @@ class Leaderboard extends Step{
     }
 
     predictTestData(evt, modelName) {
-        alert(`Predict with ${modelName}`);
+        alert(`Predict with '${modelName}'`);
     }
 
     downloadMojo(evt, modelName) {
-        alert(`Download MOJO of ${modelName}`);
+        alert(`Download MOJO of '${modelName}'`);
     }
 
     downloadPojo(evt, modelName) {
-        alert(`Download POJO of ${modelName}`);
+        alert(`Download POJO of '${modelName}'`);
     }
 
     renderModelDropdown(modelName) {
@@ -66,9 +59,6 @@ class Leaderboard extends Step{
 
         const { train, actions} = this.props
         const leaderboard = _.get(train, "trainData.leaderboard_table.data", [[]]);
-        /*<CustomButton onClick={() => this.onClickInfo()}>
-            <FontAwesomne name='cog' size='2x' style = {{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)', float: 'right'}} />
-        </CustomButton>*/
 
         return (
             <>
