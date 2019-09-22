@@ -7,6 +7,7 @@ import Card from 'react-bootstrap/Card';
 import DataFile from '../DataFile';
 import Step from '../Step';
 import Badge from 'react-bootstrap/Badge';
+import Collapse from 'react-bootstrap/Collapse';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
@@ -26,8 +27,8 @@ class Predict extends Step {
     }
 
     onClickPredict() {
-        const { actions, testFile} = this.props;
-        actions.predict(testFile);
+        const { actions } = this.props;
+        actions.callPredict();
     }
 
     render() {
@@ -49,13 +50,16 @@ class Predict extends Step {
                             category="test" />
                         <Row>
                             Selected Model: <Badge variant="success">{predict.model}</Badge>
-                        </Row>
-                        <Row className="justify-content-md-right">
                             <Button onClick={() => this.onClickPredict()}
                                 disabled={!testFile.parsed}
                                 variant={testFile.parsed ? "primary" : "secondary"} >
                                 Predict
                             </Button>
+                            <Collapse in={predict.predicted}>
+                                <Button href={`/api/3/DownloadDataset?frame_id=${predict.predictFrame}`}>
+                                    Download Prediction
+                                </Button>
+                            </Collapse>
                         </Row>
                         <Row className="justify-content-md-right">
                             <Button onClick={() => this.onClickLeaderboard()} >

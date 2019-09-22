@@ -89,7 +89,7 @@ export const jobStatus = (jobId) => {
     return apiCall(endpoint, null, {job: jobId});
 };
 
-export const frameSummary = (frameId, exclude_fields) => {
+export const frameSummary = (frameId, exclude_fields = null) => {
     const endpoint = endpoints['frame-summary'];
     const params = {frame: frameId};
     if (exclude_fields) {
@@ -98,7 +98,16 @@ export const frameSummary = (frameId, exclude_fields) => {
     return apiCall(endpoint, null, params);
 };
 
-export const automlBuilder = (trainData, exclude_fields) => {
+export const frameDetails = (frameId, exclude_fields = null) => {
+    const endpoint = endpoints['frame-details'];
+    const params = {frame: frameId};
+    if (exclude_fields) {
+        params._exclude_fields = exclude_fields;
+    } 
+    return apiCall(endpoint, null, params);
+};
+
+export const automlBuilder = (trainData, exclude_fields = null) => {
     const endpoint = endpoints['automl-builder'];
     const params = exclude_fields ? {_exclude_fields: [...exclude_fields]} : null;
     return apiCall(endpoint, trainData, params);
@@ -108,4 +117,19 @@ export const automlLeaderboard = (project_name) => {
     const endpoint = endpoints['automl-leaderboard'];
     const params = {project_name: project_name};
     return apiCall(endpoint, null, params);
+};
+
+export const predict = (modelId, frameId, predictFrame, exclude_fields = null) => {
+    const endpoint = endpoints['predict'];
+    const params = {
+        frame: frameId,
+        model: modelId,
+    };
+    const predictObject = {
+        predictions_frame: predictFrame,
+    };
+    if (exclude_fields) {
+        params._exclude_fields = exclude_fields;
+    } 
+    return apiCall(endpoint, predictObject, params);
 };

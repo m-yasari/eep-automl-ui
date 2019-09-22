@@ -65,6 +65,7 @@ export const train = (state = {}, action) => {
             state  = Object.assign({}, state, {
                 inProgress: false,
                 trained: false,
+                trainData: null,
                 apiError: action.error,
             });
             break;

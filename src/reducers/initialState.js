@@ -75,6 +75,8 @@ const initialState = {
         progressMsg: null,
         apiError: null,
         predictData: null,
+        predictFrame: '',
+        resultData: null,
     }
 };
 

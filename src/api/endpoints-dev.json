@@ -93,6 +93,16 @@
             "Accept": "application/json"
         }
     },
+    "frame-details": {
+        "method": "GET",
+        "url": "/api/3/Frames/{frame}",
+        "params": {
+            "_exclude_fields": "$"
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
+    },
     "automl-builder": {
         "method": "POST",
         "url": "/api/99/AutoMLBuilder",
@@ -144,6 +154,20 @@
         },
         "headers": {
             "Accept": "application/json"
+        }
+    },
+    "predict": {
+        "method": "POST",
+        "url": "/api/3/Predictions/models/{model}/frames/{frame}",
+        "params": {
+            "_exclude_fields": "$"
+        },
+        "headers": {
+            "Accept": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        },
+        "body": {
+            "predictions_frame": "$"
         }
     }
 }
