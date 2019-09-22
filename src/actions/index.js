@@ -2,7 +2,7 @@ import * as type from './types';
 import * as Constants from '../constants';
 import {modelsConfig} from '../components/Train/config';
 import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary, 
-    automlBuilder, automlLeaderboard } from '../api';
+    automlBuilder, automlLeaderboard, predict } from '../api';
 import mapDispatchToProps from './creator';
 
 export const resetState = (statePath) => (
@@ -139,6 +139,30 @@ export const trainError = (error) => ({
 export const selectModelForPredict = (model) => ({
     type: type.PREDICT_MODEL_SELECT,
     model: model,
+});
+
+export const predictStart = () => ({
+    type: type.PREDICT_START
+});
+
+export const predictComplete = (data) => ({
+    type: type.PREDICT_COMPLETED,
+    data: data,
+});
+
+export const predictFrameName = (frame) => ({
+    type: type.PREDICT_FRAME_NAME,
+    frame: frame,
+});
+
+export const predictResult = (data) => ({
+    type: type.PREDICT_RESULT,
+    data: data,
+});
+
+export const predictError = (error) => ({
+    type: type.PREDICT_ERROR,
+    error: error,
 });
 
 export const reparse = (category) => (dispatch, getState) => {
@@ -413,3 +437,45 @@ const callTrainSummary = () => (dispatch, getState) => {
     });
 }
 
+export const callPredict = () => (dispatch, getState) => {
+    const testFile = _.get(getState(), 'dataFile.test.parsedSetupData.destination_frame');
+    const model = _.get(getState(), 'predict.model');
+    const predictFrame = _.get(getState(), 'train.projectName')+".predict";
+
+    dispatch(predictFrameName(predictFrame));
+    dispatch(predictStart());
+    predict(model, testFile, predictFrame).then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { // both fetching and parsing succeeded
+        dispatch(predictComplete(json));
+        //dispatch(callPredictSummary());
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(predictError(`Predict error: ${err.statusText}`));
+        } else {
+            dispatch(predictError(`Predict error: ${err}`));
+        }
+    });
+};
+
+const callPredictSummary = () => (dispatch, getState) => {
+    let frame = _.get(getState(), `predict.predictFrame`);
+    frameSummary(frame, 
+        'frames/columns/data,frames/columns/domain,frames/columns/histogram_bins,frames/columns/percentiles').then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { 
+        dispatch(predictResult(json));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(predictError(`PredictSummary error: ${err.statusText}`));
+        } else {
+            dispatch(predictError(err));
+        }
+    });
+}

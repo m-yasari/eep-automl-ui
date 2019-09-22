@@ -163,7 +163,8 @@ class Train extends Step{
                 <Card>
                     <Card.Title>Models for Training</Card.Title>
                     <Card.Body>
-                        <Button onClick={() => this.onClickSettings()} style={{ float: 'right'}} >
+                        <Button onClick={() => this.onClickSettings()} style={{ float: 'right'}} 
+                            disabled={train.inProgress}>
                             <FontAwesomeIcon icon='cog' size='2x' />
                         </Button>
                         <Form id="train-form">
