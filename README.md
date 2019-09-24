@@ -22,3 +22,8 @@ To browse the application and view the first page, open below URL in your browse
 ```
 http://localhost:8080/
 ```
+
+The following URLs can be used for stub data:
+
+Train: http://localhost:8080/stub/data/Titanic/train.csv
+Test: http://localhost:8080/stub/data/Titanic/test.csv
