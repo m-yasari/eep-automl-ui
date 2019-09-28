@@ -11,7 +11,7 @@ export const TEST_DATA = 'test';
 const types = [
     ["int", "Numeric"],
     ["real", "Numeric"],
-    ["enum", "Categorical"],
+    ["enum", "Enum"],
     ["string", "String"],
 ];
 

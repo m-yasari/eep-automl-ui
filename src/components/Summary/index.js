@@ -34,7 +34,7 @@ class Summary extends Step {
 
     onTypeChange(idx, type) {
         const { actions } = this.props;
-        actions.changeColumnType(idx, type);
+        actions.changeColumnType(Constants.TRAIN_DATA, idx, type);
     };
 
     onFlagChange(idx, evt, target) {
@@ -44,7 +44,7 @@ class Summary extends Step {
 
     onTargetChange(idx) {
         const { actions } = this.props;
-        actions.changeColumnFlag(idx, false);
+        actions.changeColumnFlag(idx, true);
         actions.changeTargetColumn(idx);
     };
 
@@ -66,7 +66,7 @@ class Summary extends Step {
             <Form.Control as="select" value={type}
                 onChange={(evt) => this.onTypeChange(idx, evt.target.value)}>
                 <option>Numeric</option>
-                <option>Categorical</option>
+                <option value="Enum">Categorical</option>
                 <option>String</option>
                 <option>Time</option>
             </Form.Control>
@@ -149,7 +149,7 @@ class Summary extends Step {
                             <tbody>{this.renderSummaryData(cols, selectedColumns, summary.target)}</tbody>
                         </Table>
                     </Form>
-                    <Collapse in={summary.reparseRequired}>
+                    <Collapse in={trainFile.reparseRequired}>
                         <Button
                             onClick={() => this.onReparseClick()}
                             disabled={trainFile.inProgress}

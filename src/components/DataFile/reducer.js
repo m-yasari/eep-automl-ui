@@ -63,6 +63,16 @@ export const dataFile = (state = [], action) => {
             newFileImport  = Object.assign({}, fileImport, {
                 parsed: true,
                 parsedData: action.data,
+                reparseRequired: false,
+            });
+            break;
+        case type.CHANGE_COLUMN_TYPE:
+            fileImport.parsedSetupData.column_types[action.column] = action.columnType;
+
+            newFileImport  = Object.assign({}, fileImport, {
+                parsed: true,
+                parsedSetupData: _.clone(fileImport.parsedSetupData),
+                reparseRequired: true,
             });
             break;
     }
