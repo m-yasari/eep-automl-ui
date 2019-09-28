@@ -8,6 +8,7 @@ import Step from '../Step';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
+import { roundUp } from '../../constants/utils';
 import Table from 'react-bootstrap/Table';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -22,15 +23,6 @@ class Leaderboard extends Step{
 
     constructor(props, context){
         super(props, context);
-    }
-
-    /**
-    * @param num The number to round
-    * @param precision The number of decimal places to preserve
-    */
-    roundUp(num, precision) {
-        precision = Math.pow(10, precision)
-        return Math.ceil(num * precision) / precision
     }
 
     predictTestData(evt, modelName) {
@@ -85,7 +77,7 @@ class Leaderboard extends Step{
                                                         );
 
                                                     case 'number' :
-                                                        return (<td key={columnIndex}>{this.roundUp(leaderboard[column.colNum][rowIndex], 4)}</td>);
+                                                        return (<td key={columnIndex}>{roundUp(leaderboard[column.colNum][rowIndex], 4)}</td>);
 
                                                     default:
                                                         return (<td key={columnIndex}>{leaderboard[column.colNum][rowIndex]}</td>);

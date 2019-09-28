@@ -20,7 +20,7 @@ const getColumnsSpec = (parsedData) => {
 };
 
 export const summary = (state = {}, action) => {
-    let col, cols;
+    let idx, col, cols, selectedColumns;
     switch(action.type) {
         case type.PARSE_COMPLETED:
             state = Object.assign({}, state, {
@@ -40,13 +40,24 @@ export const summary = (state = {}, action) => {
             });
             break;
         case type.CHANGE_COLUMN_FLAG:
-            const selectedColumns = [...state.selectedColumns];
-            let idx = selectedColumns.indexOf(action.column);
+            selectedColumns = [...state.selectedColumns];
+            idx = selectedColumns.indexOf(action.column);
 
             if (action.flag && idx===-1 && action.column!==state.target) {
                 selectedColumns.push(action.column);
             } else if (!action.flag && idx!==-1) {
                 selectedColumns.splice(idx, 1);
+            }
+            state = Object.assign({}, state, {
+                selectedColumns: selectedColumns
+            });
+            break;
+        case type.SUMMARY_SELECT_ALL_COLUMNS:
+            selectedColumns = [];
+            if (action.flag) {
+                for (idx=0 ; idx<action.length ; idx++) {
+                    selectedColumns.push(idx);
+                };
             }
             state = Object.assign({}, state, {
                 selectedColumns: selectedColumns
