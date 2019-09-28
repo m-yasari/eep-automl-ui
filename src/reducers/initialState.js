@@ -20,7 +20,6 @@ const initialState = {
     summary: {
         columns: [],
         selectedColumns: [],
-        reparseRequired: false,
     },
     dataFile: {
         train: {
@@ -37,6 +36,7 @@ const initialState = {
             parsedData: null,
             apiError: null,
             formErrors: null,
+            reparseRequired: false,
         },
         test: {
             validated: false,
@@ -52,6 +52,7 @@ const initialState = {
             parsedData: null,
             apiError: null,
             formErrors: null,
+            reparseRequired: false,
         },
     },
     train: {

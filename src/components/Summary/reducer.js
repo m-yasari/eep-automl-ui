@@ -25,7 +25,6 @@ export const summary = (state = {}, action) => {
         case type.PARSE_COMPLETED:
             state = Object.assign({}, state, {
                 columns: getColumnsSpec(action.data),
-                reparseRequired: false
             })
             break;
         case type.CHANGE_COLUMN_TYPE:
@@ -36,7 +35,6 @@ export const summary = (state = {}, action) => {
             cols[action.column] = col;
             state = Object.assign({}, state, {
                 columns: cols,
-                reparseRequired: true
             });
             break;
         case type.CHANGE_COLUMN_FLAG:

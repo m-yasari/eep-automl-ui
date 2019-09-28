@@ -85,8 +85,9 @@ export const parseComplete = (category, data) => ({
     category: category,
 });
 
-export const changeColumnType = (col, colType) => ({
+export const changeColumnType = (category, col, colType) => ({
     type: type.CHANGE_COLUMN_TYPE,
+    category: category,
     column: col,
     columnType: colType
 });
@@ -174,8 +175,7 @@ export const predictError = (error) => ({
 export const reparse = (category) => (dispatch, getState) => {
     dispatch(parseStart(category));
     const parsedSetupData = _.get(getState(), `dataFile.${category}.parsedSetupData`);
-    const reparseParam = _.get(getState(), "summary.columns");
-    dispatch(callParse(category, parsedSetupData, reparseParam));
+    dispatch(callParse(category, parsedSetupData));
 };
 
 // Following actions are invoking H2O APIs
@@ -204,6 +204,16 @@ export const callImportFile = (category) => (dispatch, getState) => {
     });
 };
 
+const alignTestColumnsWithTrainColumns = (test, train) => {
+    test.column_names.map((name, idx) => {
+        let trainIdx = train.parsedSetupData.column_names.indexOf(name);
+        if (trainIdx !== -1) {
+            test.column_types[idx] = train.parsedSetupData.column_types[trainIdx];
+        }
+    });
+    return test;
+}
+
 export const callParseSetup = (category) => (dispatch, getState) => {
     const filename = _.get(getState(), `dataFile.${category}.name`);
     parseSetup(filename, ['data']).then(resp => {
@@ -212,6 +222,10 @@ export const callParseSetup = (category) => (dispatch, getState) => {
         }
         return resp.json();
     }).then((json) => { // both fetching and parsing succeeded
+        if (category === 'test') {
+            const train = _.get(getState(), `dataFile.train`);
+            json = alignTestColumnsWithTrainColumns(json, train);
+        }
         dispatch(parseSetupComplete(category, json));
         dispatch(parseStart(category));
         dispatch(callParse(category, json));
@@ -224,8 +238,8 @@ export const callParseSetup = (category) => (dispatch, getState) => {
     });
 };
 
-export const callParse = (category, parseSetupResult, reparseParam) => (dispatch, getState) => {
-    const body = parseParamBuilder(parseSetupResult, reparseParam);
+export const callParse = (category, parseSetupResult) => (dispatch, getState) => {
+    const body = parseParamBuilder(parseSetupResult);
     parse(body).then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -242,14 +256,10 @@ export const callParse = (category, parseSetupResult, reparseParam) => (dispatch
     });
 };
 
-const parseParamBuilder = (parseSetupResult, reparseParam = null) => {
-    let columns = null;
-    if (reparseParam) {
-        columns = [];
-        reparseParam.map((col) => {
-            columns.push(col.type);
-        });
-    }
+const parseParamBuilder = (parseSetupResult) => {
+    parseSetupResult.column_names.map((name, idx)=> {
+        console.log(`Column ${name}:${parseSetupResult.column_types[idx]}`);
+    });
     return {
         destination_frame: parseSetupResult.destination_frame,
         source_frames: parseSetupResult.source_frames[0].name, // TODO: to make it through array functions
@@ -261,7 +271,7 @@ const parseParamBuilder = (parseSetupResult, reparseParam = null) => {
         check_header: parseSetupResult.check_header,
         delete_on_done: false,
         chunk_size: parseSetupResult.chunk_size,
-        column_types: columns || parseSetupResult.column_types,
+        column_types: parseSetupResult.column_types,
     }
 };
 
