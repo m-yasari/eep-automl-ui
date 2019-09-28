@@ -26,6 +26,7 @@ export const summary = (state = {}, action) => {
         case type.PARSE_COMPLETED:
             state = Object.assign({}, state, {
                 columns: getColumnsSpec(action.data),
+                recordsCount: _.get(action.data, 'frames[0].rows', 0),
             })
             break;
         case type.CHANGE_COLUMN_TYPE:
