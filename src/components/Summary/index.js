@@ -4,8 +4,11 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Table from 'react-bootstrap/Table'
+import Badge from 'react-bootstrap/Badge';
 import Collapse from 'react-bootstrap/Collapse';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Tooltip from 'react-bootstrap/Tooltip';
 import Step from '../Step';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
@@ -84,13 +87,17 @@ class Summary extends Step {
         );
     };
 
-    renderTargetEntries(idx, flag) {
+    renderLabelEntries(idx, label, target) {
         return (
-            <Form.Check type="radio" aria-label="Select as target."
-                name="target-field" 
-                checked={flag===idx} 
-                onChange={() => this.onTargetChange(idx)}
-                />
+            <>
+            <Button size="sm" variant="light"
+                onClick={() => this.onTargetChange(idx)}>
+                {label} 
+            </Button>
+            <Collapse in={idx===target}>
+                <Badge variant="success" pill>Target</Badge>
+            </Collapse>
+            </>
         );
     };
 
@@ -99,11 +106,10 @@ class Summary extends Step {
         const listItems = cols.map((col, idx) => (
             <tr>
                 <td>{++row}</td>
-                <td>{col.label}</td>
-                <td>{this.renderTargetEntries(idx, target)}</td>
+                <td>{this.renderLabelEntries(idx, col.label, target)}</td>
                 <td>{this.renderTypeEntries(idx, col.type)}</td>
                 <td>{this.renderFlagEntries(idx, selectedColumns.indexOf(idx)!==-1, target)}</td>
-                <td>?</td>
+                <td>{col.type==="Enum" ? col.domain_cardinality : ""}</td>
                 <td>{col.missing_count}</td>
                 <td>{roundUp(col.mean, 3)}</td>
                 <td>{roundUp(col.sigma, 3)}</td>
@@ -124,15 +130,19 @@ class Summary extends Step {
                         The following is summary of imported train file. If any column type is changed, then the data
                         should be analysed again.
                     </Card.Text>
-                    <Form
-                        id="summary-form"
-                    >
+                    <Form id="summary-form">
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Field</th>
-                                    <th>Target</th>
+                                    <th>Field <OverlayTrigger overlay={
+                                            <Tooltip>
+                                            Click on a field name to select as the target field.
+                                            </Tooltip>
+                                        }>
+                                        <Badge pill variant="dark">?</Badge>
+                                        </OverlayTrigger>
+                                    </th>
                                     <th>Type</th>
                                     <th>
                                         <Form.Check type="checkbox" aria-label="Select field to to select all rows.">
@@ -169,7 +179,8 @@ class Summary extends Step {
                     </Collapse>
                     <Button
                         onClick={() => this.onClickNext()}
-                        disabled={trainFile.inProgress}
+                        disabled={trainFile.inProgress || trainFile.reparseRequired || 
+                            summary.target===null || selectedColumns.length<=1 }
                         variant={trainFile.parsed ? "primary" : "secondary"}
                         >
                         Next
