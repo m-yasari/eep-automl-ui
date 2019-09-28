@@ -39,7 +39,9 @@ class Summary extends Step {
 
     onFlagChange(idx, evt, target) {
         const { actions } = this.props;
-        actions.changeColumnFlag(idx, evt.target.checked);
+        if (idx !== target) {
+            actions.changeColumnFlag(idx, evt.target.checked);
+        }
     };
 
     onTargetChange(idx) {
@@ -86,7 +88,7 @@ class Summary extends Step {
         return (
             <Form.Check type="radio" aria-label="Select as target."
                 name="target-field" 
-                {...(flag==idx ? "checked" : "")} 
+                checked={flag===idx} 
                 onChange={() => this.onTargetChange(idx)}
                 />
         );
