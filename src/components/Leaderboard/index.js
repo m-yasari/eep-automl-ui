@@ -67,20 +67,22 @@ class Leaderboard extends Step{
                                     { leaderboard[0].map((row, rowIndex) => (
                                         <tr key={rowIndex}>
                                             { columnsHeader.map((column, columnIndex) => {
+                                                let value = leaderboard[column.colNum][rowIndex];
+                                                if (column.type === 'number') {
+                                                    value = roundUp(value * (column.multiplier || 1), 
+                                                        column.precision || 4);
+                                                }
                                                 switch(column.type){
 
                                                     case 'link' :
                                                         return (
                                                             <td key={columnIndex}>
-                                                                {this.renderModelDropdown(leaderboard[column.colNum][rowIndex])}
+                                                                {this.renderModelDropdown(value)}
                                                             </td>
                                                         );
 
-                                                    case 'number' :
-                                                        return (<td key={columnIndex}>{roundUp(leaderboard[column.colNum][rowIndex], 4)}</td>);
-
                                                     default:
-                                                        return (<td key={columnIndex}>{leaderboard[column.colNum][rowIndex]}</td>);
+                                                        return (<td key={columnIndex}>{value}</td>);
                                                 }
                                             }) }
                                         </tr>
