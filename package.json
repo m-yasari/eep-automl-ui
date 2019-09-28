@@ -8,8 +8,8 @@
     "env:dev": "cross-env ENV=development",
     "watch": "webpack -d --watch",
     "build": "webpack",
-    "start": "webpack-dev-server --content-base dist",
-    "dev:start": "cross-env ENV=development webpack-dev-server --hot --inline --config webpack.config.js --content-base dist",
+    "start": "webpack-dev-server --content-base static",
+    "dev:start": "cross-env ENV=development webpack-dev-server --hot --inline --config webpack.config.js --content-base static",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
