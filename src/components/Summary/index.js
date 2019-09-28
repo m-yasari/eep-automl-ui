@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Table from 'react-bootstrap/Table'
 import Collapse from 'react-bootstrap/Collapse';
@@ -12,20 +10,11 @@ import Step from '../Step';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
 import * as Constants from '../../constants';
-import { type } from 'os';
+import { roundUp } from '../../constants/utils';
 
 const mapStateToProps = state => {
     return ({ summary: state.summary, trainFile: state.dataFile.train });
 }
-
-/**
-* @param num The number to round
-* @param precision The number of decimal places to preserve
-*/
-const roundUp = (num, precision) => {
-    precision = Math.pow(10, precision)
-    return Math.ceil(num * precision) / precision
-};
 
 class Summary extends Step {
     constructor(props, context) {
@@ -59,12 +48,25 @@ class Summary extends Step {
         actions.changeTargetColumn(idx);
     };
 
+    checkAllRecordsSelected() {
+        const {summary: {columns, selectedColumns}} = this.props;
+
+        return columns.length === selectedColumns.length;
+    }
+
+    handleClickForHeaderCheckbox(e) {
+
+        const {actions, summary: {columns}} = this.props;
+
+        actions.selectAllColumns2Train(!this.checkAllRecordsSelected(), columns.length);
+    }
+
     renderTypeEntries(idx, type) {
         return (
             <Form.Control as="select" value={type}
                 onChange={(evt) => this.onTypeChange(idx, evt.target.value)}>
                 <option>Numeric</option>
-                <option>Enum</option>
+                <option>Categorical</option>
                 <option>String</option>
                 <option>Time</option>
             </Form.Control>
@@ -74,7 +76,7 @@ class Summary extends Step {
     renderFlagEntries(idx, flag, target) {
         return (
             <Form.Check type="checkbox" aria-label="Select field to consider it as a factor." 
-                {...(flag ? "checked" : "")} 
+                checked={flag} 
                 onChange={(evt) => this.onFlagChange(idx, evt, target)}
                 />
         );
@@ -105,9 +107,7 @@ class Summary extends Step {
                 <td>{roundUp(col.sigma, 3)}</td>
             </tr>
         ));
-       return (
-        <tbody>{listItems}</tbody>
-       );
+        return listItems;
     }
 
     render() {
@@ -132,14 +132,21 @@ class Summary extends Step {
                                     <th>Field</th>
                                     <th>Target</th>
                                     <th>Type</th>
-                                    <th>Flag</th>
+                                    <th>
+                                        <Form.Check type="checkbox" aria-label="Select field to to select all rows.">
+                                            <Form.Check.Input type="checkbox" 
+                                                checked={this.checkAllRecordsSelected()}
+                                                onClick={(e) => this.handleClickForHeaderCheckbox(e)} />
+                                            <Form.Check.Label>Flag</Form.Check.Label>
+                                        </Form.Check>
+                                    </th>
                                     <th>Unique</th>
                                     <th>Missing</th>
                                     <th>Mean</th>
                                     <th>Sigma</th>
                                 </tr>
                             </thead>
-                            {this.renderSummaryData(cols, selectedColumns, summary.target)}
+                            <tbody>{this.renderSummaryData(cols, selectedColumns, summary.target)}</tbody>
                         </Table>
                     </Form>
                     <Collapse in={summary.reparseRequired}>

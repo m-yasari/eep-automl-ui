@@ -97,6 +97,12 @@ export const changeColumnFlag = (col, flag) => ({
     flag: flag
 });
 
+export const selectAllColumns2Train = (flag, length) => ({
+    type: type.SUMMARY_SELECT_ALL_COLUMNS,
+    flag: flag,
+    length: length
+});
+
 export const changeTargetColumn = (col) => ({
     type: type.CHANGE_TARGET_COLUMN,
     column: col,
