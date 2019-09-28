@@ -20,6 +20,7 @@ const initialState = {
     summary: {
         columns: [],
         selectedColumns: [],
+        target: null,
     },
     dataFile: {
         train: {
