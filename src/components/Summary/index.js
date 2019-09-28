@@ -8,6 +8,8 @@ import Badge from 'react-bootstrap/Badge';
 import Collapse from 'react-bootstrap/Collapse';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Step from '../Step';
 import { connect } from 'react-redux';
@@ -72,7 +74,7 @@ class Summary extends Step {
                 onChange={(evt) => this.onTypeChange(idx, evt.target.value)}>
                 <option>Numeric</option>
                 <option value="Enum">Categorical</option>
-                <option>String</option>
+                <option value="String">Text</option>
                 <option>Time</option>
             </Form.Control>
         );
@@ -130,6 +132,13 @@ class Summary extends Step {
                         The following is summary of imported train file. If any column type is changed, then the data
                         should be analysed again.
                     </Card.Text>
+                    <Row>
+                        <Col md={{ span: 6}}>{trainFile.name}</Col>
+                        <Col md={{ span: 3, offset: 3 }}>
+                            <span class='total-records'>
+                            Total Records: {summary.recordsCount}</span>
+                        </Col>
+                    </Row>
                     <Form id="summary-form">
                         <Table striped bordered hover>
                             <thead>

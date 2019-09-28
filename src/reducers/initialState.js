@@ -21,6 +21,7 @@ const initialState = {
         columns: [],
         selectedColumns: [],
         target: null,
+        recordsCount: 0,
     },
     dataFile: {
         train: {
