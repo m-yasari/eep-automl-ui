@@ -16,6 +16,11 @@ export const predict = (state = [], action) => {
                 resultData: null,
             });
             break;
+        case type.PREDICT_MODEL_METRICS:
+            state = Object.assign({}, state, {
+                modelMetrics: action.data,
+            });
+            break;
         case type.PREDICT_START:
             state  = Object.assign({}, state, {
                 inProgress: true,

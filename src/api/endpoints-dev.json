@@ -169,5 +169,15 @@
         "body": {
             "predictions_frame": "$"
         }
+    },
+    "model-metrics": {
+        "method": "GET",
+        "url": "/api/3/ModelMetrics/models/{model}",
+        "params": {
+            "_exclude_fields": "$"
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
     }
 }

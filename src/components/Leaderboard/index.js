@@ -28,6 +28,7 @@ class Leaderboard extends Step{
     predictTestData(evt, modelName) {
         const { actions } = this.props
         actions.selectModelForPredict(modelName);
+        actions.callModelMetrics(modelName);
         actions.setDisablePredictFlag(false);
         actions.changeMainTab(Constants.PREDICT_KEY);
     }

@@ -133,3 +133,14 @@ export const predict = (modelId, frameId, predictFrame, exclude_fields = null) =
     } 
     return apiCall(endpoint, predictObject, params);
 };
+
+export const modelMetrics = (modelId, exclude_fields = null) => {
+    const endpoint = endpoints['model-metrics'];
+    const params = {
+        model: modelId,
+    };
+    if (exclude_fields) {
+        params._exclude_fields = exclude_fields;
+    } 
+    return apiCall(endpoint, null, params);
+};

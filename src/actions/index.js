@@ -1,8 +1,8 @@
 import * as type from './types';
 import * as Constants from '../constants';
 import {modelsConfig} from '../components/Train/config';
-import { checkFile, importFile, parseSetup, parse, jobStatus, frameSummary, 
-    automlBuilder, automlLeaderboard, predict } from '../api';
+import { importFile, parseSetup, parse, jobStatus, frameSummary, 
+    automlBuilder, automlLeaderboard, modelMetrics, predict } from '../api';
 import mapDispatchToProps from './creator';
 
 export const resetState = (statePath) => (
@@ -146,6 +146,11 @@ export const trainError = (error) => ({
 export const selectModelForPredict = (model) => ({
     type: type.PREDICT_MODEL_SELECT,
     model: model,
+});
+
+export const updateModelMetrics = (data) => ({
+    type: type.PREDICT_MODEL_METRICS,
+    data: data,
 });
 
 export const predictStart = () => ({
@@ -449,6 +454,23 @@ const callTrainSummary = () => (dispatch, getState) => {
             dispatch(trainError(`TrainSummary error: ${err.statusText}`));
         } else {
             dispatch(trainError(err));
+        }
+    });
+}
+
+export const callModelMetrics = (modelId) => (dispatch, getState) => {
+    modelMetrics(modelId).then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { 
+        dispatch(updateModelMetrics(json));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(predictError(`Model Metrics error: ${err.statusText}`));
+        } else {
+            dispatch(predictError(err));
         }
     });
 }
