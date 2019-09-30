@@ -56,7 +56,7 @@ class Leaderboard extends Step{
                     <Card.Title>Models for Training</Card.Title>
                     <Card.Body>
                         <Form id="leaderboard-form">
-                            <Table striped border hover>
+                            <Table striped bordered hover>
                                 <thead>
                                     <tr>
                                         {columnsHeader.map((columnHead, index) => (

@@ -168,7 +168,7 @@ class Train extends Step{
                             <FontAwesomeIcon icon='cog' size='2x' />
                         </Button>
                         <Form id="train-form">
-                            <Table striped border hover>
+                            <Table striped bordered hover>
                                 {this.renderTrainHeader(columnsHeader)}
                                 {this.renderTrainData(columnsHeader, modelsConfig)}
                             </Table>
