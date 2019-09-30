@@ -40,8 +40,12 @@ class Predict extends Step {
         const rowCount = metrics.rowcount;
 
         return (
-        <Table striped border hover>
+        <Table striped bordered hover>
             <thead>
+                <tr>
+                    <th></th>
+                    <th key="PredictedClass" colSpan={columnsHeader.length+2}>Predicted Class</th>
+                </tr>
                 <tr>
                     <th key="name0">Actual Class</th>
                     {columnsHeader.map((columnHead, index) => (
