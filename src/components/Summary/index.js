@@ -129,8 +129,18 @@ class Summary extends Step {
                 <Card.Body>
                     <Card.Title>Summary of Train File</Card.Title>
                     <Card.Text>
-                        The following is summary of imported train file. If any column type is changed, then the data
-                        should be analysed again.
+                        <div>
+                        The following is summary of analysis of the imported train file. Please review and change column types if needed.<br />
+                        To procced to next step, you need to:
+                        <ul>
+                        
+                            <li>Select a target field by clicking on the field name.</li>
+                            <li>Select fields that should be used for training, by selecting them using 'Flag' column. Note that the target column always should be selected</li>
+                            <li>If any change made to any column type, press 'Re-parse' before proceeding to next step.</li>
+                            <li>Press 'Next' when above steps completed.</li>
+                        </ul>
+                        <hr />
+                        </div>
                     </Card.Text>
                     <Row>
                         <Col md={{ span: 6}}>{trainFile.name}</Col>
