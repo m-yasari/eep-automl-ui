@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
-import { Tabs, Tab } from 'react-bootstrap';
+import { Tabs, Tab, Row, Collapse, Button } from 'react-bootstrap';
 import Capture from '../Capture';
 import Summary from '../Summary';
 import * as Constants from '../../constants';
@@ -17,11 +17,27 @@ class Main extends React.Component {
         super(props, context);
         this.mainTab = React.createRef();
     }
+
+    onWhitePaperClick() {
+        window.open("https://alm-confluence.systems.uk.hsbc/confluence/display/EEP18AIML/Whitepaper+for+Project+Scout",
+            "_whitepaper");
+    }
   
     render() {
         const { main, actions, summary, train } = this.props;
 
         return (
+            <>
+            <Row>
+            <Collapse in={main.activeKey === Constants.CAPTURE_KEY}>
+                <div>
+                Project Scout provides AutoML capabilities for users with minimal knowledge of AI/ML.<br />
+                Find more information on this <a href="#" 
+                    onClick={()=> this.onWhitePaperClick()}
+                    >whitepaper</a>.  
+                </div>         
+            </Collapse>
+            </Row>
             <Tabs
                 id="main-controlled-tab"
                 ref={this.mainTab}
@@ -44,6 +60,7 @@ class Main extends React.Component {
                     <Predict statePath='predict' />
                 </Tab>
             </Tabs>
+            </>
         );
     }
 

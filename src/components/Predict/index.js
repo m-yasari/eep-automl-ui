@@ -40,6 +40,12 @@ class Predict extends Step {
         const rowCount = metrics.rowcount;
 
         return (
+        <>
+        <div>
+            <br />
+            <hr />
+            <b>Confusion Matrix</b> shows the accuracy of the selected model, where in each row shows the result of prediction of train data, compared with the actual value in train data.
+        </div>
         <Table striped bordered hover>
             <thead>
                 <tr>
@@ -74,6 +80,7 @@ class Predict extends Step {
                 )) }
             </tbody>
         </Table>
+        </>
         );
     }
 
@@ -84,9 +91,13 @@ class Predict extends Step {
         return (
             <Card>
                 <Card.Body> 
-                    <Card.Title>Import Test File</Card.Title>
+                    <Card.Title>Predict a Test File</Card.Title>
                     <Card.Text>
-                        Enter URL of test file, then import to load for prediction.
+                        Enter URL of a test file in below field, then press Import button to load the data for prediction based on the selected model.<br />
+                        e.g.: https://storage.googleapis.com/my-eep-bucket/ML-project/Titanic/test.csv<br />
+                        Once the test file imported, then press 'Predict' button to predict based on selected model.<br />
+                        After prediction completed, 'Download Predict' button can be used to download the predicted file in CSV format.<br />
+                        <b>Note: </b>Currently, only CSV format is supported.
                     </Card.Text>
                     <Form
                         id="capture-form"
