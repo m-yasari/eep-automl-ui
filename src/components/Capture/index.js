@@ -33,7 +33,10 @@ class Capture extends Step {
                 <Card.Body> 
                     <Card.Title>Import Source File</Card.Title>
                     <Card.Text>
-                        Enter URL of train file, then import to load for analysis and training.
+                        Start AutoML by loading a train data file.<br/>
+                        Enter URL of a train file in below field, then press Import button to load the data for analysis and training.<br />
+                        e.g.: https://storage.googleapis.com/my-eep-bucket/ML-project/Titanic/train.csv<br />
+                        <b>Note: </b>Currently, only CSV format is supported.
                     </Card.Text>
                     <Form
                         id="capture-form"

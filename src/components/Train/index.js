@@ -128,7 +128,7 @@ class Train extends Step{
 
                             case 'checkBox':
                                 return(<td key={columnIndex}>
-                                    <Form.Check type="checkbox" aria-label="Select field to consider it as a factor."
+                                    <Form.Check type="checkbox" aria-label="Select the model to include it in AutoML."
                                     onClick={(e) => this.handleClickForCheckbox(e, row)}
                                     checked = {selected} />
                                 </td>);
@@ -136,7 +136,7 @@ class Train extends Step{
                             case 'link' :
                                 return (
                                     <td key={columnIndex}>
-                                        <Button class="btn btn-link" onClick={(e) => this.onClickLink(e, row)}>Documentation</Button>
+                                        {row.info} <a href="#" onClick={(e) => this.onClickLink(e, row)}>(More Information)</a>
                                     </td>
                                 );
 
@@ -159,6 +159,12 @@ class Train extends Step{
 
         return (
             <>
+                <div>
+                    Select from below models to use them during AutoML.<br />
+                    You can also set some parameters for AutoML process (such as Project Name, and Maximum Train Time) by clicking on gear button.<br />
+                    <b>Note: </b>Deep Learning model uses more CPU/Memory resources. 
+                    <hr />
+                </div>
                 <TrainSettings closePopup={handleClose} />
                 <Card>
                     <Card.Title>Models for Training</Card.Title>
@@ -168,7 +174,7 @@ class Train extends Step{
                             <FontAwesomeIcon icon='cog' size='2x' />
                         </Button>
                         <Form id="train-form">
-                            <Table striped border hover>
+                            <Table striped bordered hover>
                                 {this.renderTrainHeader(columnsHeader)}
                                 {this.renderTrainData(columnsHeader, modelsConfig)}
                             </Table>

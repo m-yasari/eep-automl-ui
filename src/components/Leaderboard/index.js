@@ -28,6 +28,7 @@ class Leaderboard extends Step{
     predictTestData(evt, modelName) {
         const { actions } = this.props
         actions.selectModelForPredict(modelName);
+        actions.callModelMetrics(modelName);
         actions.setDisablePredictFlag(false);
         actions.changeMainTab(Constants.PREDICT_KEY);
     }
@@ -50,12 +51,23 @@ class Leaderboard extends Step{
 
         return (
             <>
+                <div>
+                    Below is the result of AutoML training, with a set of models ranked by AUC.<br />
+                    Click on their name, and the following functions are available for each model:<br />
+                    <ul>
+                        <li><i>Predict on a test data</i>: Use this model and goes to next tab i.e. Predict. In Predict Tab, a test file can be imported and get predicted using the selected model.</li>
+                        <li><i>Download MOJO format</i>: The generated model can be downloaded and integrated into an application to use it for live prediction.</li>
+                        <li><i>Download POJO format</i>: The generated model can be downloaded and integrated into a Java application to use it for live prediction.</li>
+                    </ul>
+                    <b>Note: </b> <i>Download POJO format</i> is not available for StackedEnsemble models.
+                    <hr />
+                </div>
                 <TrainSettings closePopup={() => this.handleClose()} parentActions={actions} />
                 <Card>
-                    <Card.Title>Models for Training</Card.Title>
+                    <Card.Title>Leaderboard</Card.Title>
                     <Card.Body>
                         <Form id="leaderboard-form">
-                            <Table striped border hover>
+                            <Table striped bordered hover>
                                 <thead>
                                     <tr>
                                         {columnsHeader.map((columnHead, index) => (
