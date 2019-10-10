@@ -7,9 +7,9 @@
     "env:prod": "cross-env ENV=production",
     "env:dev": "cross-env ENV=development",
     "watch": "webpack -d --watch",
-    "build": "webpack",
-    "start": "webpack-dev-server --content-base dist",
-    "dev:start": "cross-env ENV=development webpack-dev-server --hot --inline --config webpack.config.js --content-base dist",
+    "start": "node server/server.js",
+    "build": "cross-env ENV=production webpack --config webpack.config.js",
+    "dev:start": "cross-env ENV=development webpack-dev-server --hot --inline --config webpack.config.js --content-base static",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -44,6 +44,7 @@
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
+    "request": "^2.88.0",
     "webpack": "^4.0.0",
     "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2",

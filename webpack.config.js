@@ -31,7 +31,7 @@ module.exports = {
         main: './src/css/main.css'
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'static'),
         filename: '[name].js',
         publicPath: '/'
     },
@@ -52,7 +52,10 @@ module.exports = {
           { test: /\.js$/, use: [
               { loader: 'babel-loader', options: { presets: ['@babel/preset-env', '@babel/preset-react']} }
             ],
-            exclude: /node_modules/
+            exclude: [
+                /node_modules/,
+                /server/
+            ]
           },
           { test: /\.jsx$/, use: [
               { loader: 'babel-loader', options: { presets: ['@babel/preset-env', '@babel/preset-react']} }
