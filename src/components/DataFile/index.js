@@ -74,20 +74,25 @@ class ImportFile extends React.Component {
                         <Collapse in={importFile.inProgress || importFile.parsed}>
                             <ProgressBar animated={importFile.progress < 100}
                                 now={importFile.progress} 
-                                label={`${importFile.progress}%`}
+                                label={`${importFile.progress}% ${importFile.progress===100 ? "Imported" : ""}`}
                                 variant={importFile.apiError ? "danger" : "success"}
                                 />
                         </Collapse>
                     </Col>
                 </Row>
-                <Row>
-                    <Alert show={importFile.apiError} varient="danger">{importFile.apiError}</Alert>
-                    <Alert 
-                        show={importFile.imported || importFile.parsedSetup || importFile.parsed}
-                        varient="success">
-                        {importFile.progress<100 ? importFile.progressMsg : "Imported"}
-                    </Alert>
-                </Row>
+                <Collapse in={importFile.apiError}>
+                    <Row>
+                        <Alert varient="warning">{importFile.apiError}</Alert>
+                    </Row>
+                </Collapse>
+                <Collapse in={importFile.inProgress}>
+                    <Row>
+                        <Alert 
+                            varient="success">
+                            {importFile.progress<100 ? importFile.progressMsg : "Imported"}
+                        </Alert>
+                    </Row>
+                </Collapse>
             </Form.Group>
         );
     }

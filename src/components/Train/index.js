@@ -75,6 +75,12 @@ class Train extends Step{
         return (models.indexOf(row.id) !== -1 ? true : false);
     }
 
+    isInProgress() {
+        const {train: {inProgress}} = this.props;
+
+        return inProgress ? true : false;
+    }
+
     isAnySelected() {
         const {train: {models}} = this.props;
 
@@ -98,6 +104,7 @@ class Train extends Step{
                                     <Form.Check type="checkbox" aria-label="Select field to to select all rows.">
                                         <Form.Check.Input type="checkbox" 
                                             checked={this.checkAllRecordsSelected()}
+                                            disabled={this.isInProgress()}
                                             onClick={(e) => this.handleClickForHeaderCheckbox(e)} />
                                         <Form.Check.Label>Flag</Form.Check.Label>
                                     </Form.Check>
@@ -130,7 +137,8 @@ class Train extends Step{
                                 return(<td key={columnIndex}>
                                     <Form.Check type="checkbox" aria-label="Select the model to include it in AutoML."
                                     onClick={(e) => this.handleClickForCheckbox(e, row)}
-                                    checked = {selected} />
+                                    checked={selected} 
+                                    disabled={this.isInProgress()}/>
                                 </td>);
 
                             case 'link' :
@@ -160,8 +168,11 @@ class Train extends Step{
         return (
             <>
                 <div>
-                    Select from below models to use them during AutoML.<br />
-                    You can also set some parameters for AutoML process (such as Project Name, and Maximum Train Time) by clicking on gear button.<br />
+                    <b>Process:</b><br />
+                    <ol>
+                        <li>Option to control set a project name and set time limit for model training (click on grear button)</li>
+                        <li>Train multiple Models based on agorithms listed below. Select model by mark the Flag column</li>
+                    </ol>
                     <b>Note: </b>Deep Learning model uses more CPU/Memory resources. 
                     <hr />
                 </div>

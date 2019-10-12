@@ -52,13 +52,13 @@ class Leaderboard extends Step{
         return (
             <>
                 <div>
-                    Below is the result of AutoML training, with a set of models ranked by AUC.<br />
-                    Click on their name, and the following functions are available for each model:<br />
-                    <ul>
-                        <li><i>Predict on a test data</i>: Use this model and goes to next tab i.e. Predict. In Predict Tab, a test file can be imported and get predicted using the selected model.</li>
-                        <li><i>Download MOJO format</i>: The generated model can be downloaded and integrated into an application to use it for live prediction.</li>
-                        <li><i>Download POJO format</i>: The generated model can be downloaded and integrated into a Java application to use it for live prediction.</li>
-                    </ul>
+                    Below is the result of AutoML training.<br />
+                    <b>Process:</b><br />
+                    <ol>
+                        <li>List best performing models.</li>
+                        <li>Ability to test model on a different data.</li>
+                        <li>Ability download MOJO/POJO for productionizing.</li>
+                    </ol>
                     <b>Note: </b> <i>Download POJO format</i> is not available for StackedEnsemble models.
                     <hr />
                 </div>

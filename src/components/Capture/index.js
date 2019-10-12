@@ -34,8 +34,13 @@ class Capture extends Step {
                     <Card.Title>Import Source File</Card.Title>
                     <Card.Text>
                         Start AutoML by loading a train data file.<br/>
-                        Enter URL of a train file in below field, then press Import button to load the data for analysis and training.<br />
-                        e.g.: https://storage.googleapis.com/my-eep-bucket/ML-project/Titanic/train.csv<br />
+                        <b>Process:</b><br />
+                        <ol>
+                            <li>Load CSV file from a URL (e.g. https://mysite.global.hsbc/personal/43314845/Documents/EEP/data/Titanic/train.csv)</li>
+                            <li>Structured data only</li>
+                            <li>Data size &lt; 1GB</li>
+                            <li>Supports Classification and Regression Models</li>
+                        </ol>
                         <b>Note: </b>Currently, only CSV format is supported.
                     </Card.Text>
                     <Form

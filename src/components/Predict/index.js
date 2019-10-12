@@ -93,9 +93,12 @@ class Predict extends Step {
                 <Card.Body> 
                     <Card.Title>Predict a Test File</Card.Title>
                     <Card.Text>
-                        Enter URL of a test file in below field, then press Import button to load the data for prediction based on the selected model.<br />
-                        e.g.: https://storage.googleapis.com/my-eep-bucket/ML-project/Titanic/test.csv<br />
-                        Once the test file imported, then press 'Predict' button to predict based on selected model.<br />
+                        <b>Process:</b><br />
+                        <ol>
+                            <li>Ability to load test data and let the model predict.</li>
+                            <li>Choose any model and find the result.</li>
+                        </ol>
+                        Enter URL of a test file to import (e.g. https://mysite.global.hsbc/personal/43314845/Documents/EEP/data/Titanic/test.csv).<br />
                         After prediction completed, 'Download Predict' button can be used to download the predicted file in CSV format.<br />
                         <b>Note: </b>Currently, only CSV format is supported.
                     </Card.Text>
