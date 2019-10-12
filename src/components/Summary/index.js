@@ -131,14 +131,17 @@ class Summary extends Step {
                     <Card.Text>
                         <div>
                         The following is summary of analysis of the imported train file. Please review and change column types if needed.<br />
-                        To procced to next step, you need to:
-                        <ul>
-                        
-                            <li>Select a target field by clicking on the field name.</li>
-                            <li>Select fields that should be used for training, by selecting them using 'Flag' column. Note that the target column always should be selected</li>
-                            <li>If any change made to any column type, press 'Re-parse' before proceeding to next step.</li>
-                            <li>Press 'Next' when above steps completed.</li>
-                        </ul>
+                        <b>Process:</b><br />
+                        <ol>
+                            <li>Data set is loaded into AutoML memory in previous tab (i.e. Capture).</li>
+                            <li>Provided summary of data in below table includes number of records, key details like Missing values, Statistics of numerical values and Number of distint categorical values.</li>
+                            <li>Options to change the data type, select the field to be used as input for training as well as target field.<br />
+                                Select the target field by click on Field name. Fields can be selected as input by check mark Flag.
+                                </li>
+                            <li>Based on the type of target field, the tool would create Classification or Regression model. <br />
+                                (Categorical target field for Classification model, and Numeric target field for Regression model)
+                                </li>
+                        </ol>
                         <hr />
                         </div>
                     </Card.Text>
