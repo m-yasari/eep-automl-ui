@@ -1,4 +1,5 @@
 import * as type from './types';
+import * as _ from 'lodash';
 import * as Constants from '../constants';
 import {modelsConfig} from '../components/Train/config';
 import { importFile, parseSetup, parse, jobStatus, frameSummary, 
@@ -141,6 +142,17 @@ export const trainComplete = (data) => ({
 export const trainError = (error) => ({
     type: type.TRAIN_ERROR,
     error: error,
+});
+
+export const leaderboardData = (data) => ({
+    type: type.LEADERBOARD_DATA,
+    data: data
+});
+
+export const leaderboardSort = (column, ascend = false) => ({
+    type: type.LEADERBOARD_SORT,
+    column: column,
+    ascend: ascend
 });
 
 export const selectModelForPredict = (model) => ({
@@ -363,7 +375,7 @@ const prepareAutoTrainReqPayload = (getState) => {
           //"fold_column": "${fold_column}",
           //"weights_column": "${weights_column}",
           "ignored_columns": ignoredColumns,
-          "sort_metric": "AUC"
+          //"sort_metric": "AUC"
         },
         "build_models":{
           "include_algos": algos
@@ -447,6 +459,7 @@ const callTrainSummary = () => (dispatch, getState) => {
         return resp.json();
     }).then((json) => { 
         dispatch(trainComplete(json));
+        dispatch(leaderboardData( _.get(json, "leaderboard_table.data", [[]]) ));
         dispatch(changeMainTab(Constants.LEADERBOARD_KEY));
         dispatch(setDisableLeaderboardFlag(false));
     }).catch(err => { // either fetching or parsing failed

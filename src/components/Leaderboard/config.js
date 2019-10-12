@@ -3,27 +3,27 @@ export const columnsHeader = [
     {
         name: 'Models',
         type: 'link',
-        colNum: 1,
+        dataColName: 'modelId',
         sortable: false
     },
     {
         name: 'AUC',
         type: 'number',
-        colNum: 2,
+        dataColName: 'auc',
         precision: 4,
         sortable: false
     },
     {
         name: 'Logloss',
         type: 'number',
-        colNum: 3,
+        dataColName: 'logloss',
         precision: 4,
         sortable: false
     },
     {
         name: 'Mean per class err',
         type: 'number',
-        colNum: 4,
+        dataColName: 'meanPerClassErr',
         multiplier: 100,
         precision: 2,
         sortable: false

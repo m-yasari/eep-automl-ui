@@ -14,9 +14,10 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 import TrainSettings from '../TrainSettings';
 import { columnsHeader } from './config';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const mapStateToProps = state => {
-    return ({ train: state.train});
+    return ({ leaderboard: state.leaderboard});
 }
  
 class Leaderboard extends Step{
@@ -43,11 +44,33 @@ class Leaderboard extends Step{
         </DropdownButton>
         );
     }
+    
+    renderSortAscend(column) {
+        const { leaderboard: {sortColumn, ascend}, actions} = this.props
+        const flag = ascend && column===sortColumn;
+        return (
+            <Button onClick={() => actions.leaderboardSort(column, true)} 
+                disabled={flag} size="sm" variant={flag ? "warning" : "light"}>
+                <FontAwesomeIcon icon='angle-up' size='1x'/>
+            </Button>
+        );
+    }
+
+    renderSortDescend(column) {
+        const { leaderboard: {sortColumn, ascend}, actions} = this.props
+        const flag = !ascend && column===sortColumn;
+        return (
+            <Button onClick={() => actions.leaderboardSort(column, false)} 
+                disabled={flag} size="sm" variant={flag ? "warning" : "light"}>
+                <FontAwesomeIcon icon='angle-down' size='1x'/>
+            </Button>
+        );
+    }
 
     render() {
 
-        const { train, actions} = this.props
-        const leaderboard = _.get(train, "trainData.leaderboard_table.data", [[]]);
+        const { leaderboard, actions} = this.props
+        const lbData = leaderboard.data;
 
         return (
             <>
@@ -55,11 +78,11 @@ class Leaderboard extends Step{
                     Below is the result of AutoML training.<br />
                     <b>Process:</b><br />
                     <ol>
-                        <li>List best performing models.</li>
+                        <li>List best performin models.</li>
                         <li>Ability to test model on a different data.</li>
                         <li>Ability download MOJO/POJO for productionizing.</li>
                     </ol>
-                    <b>Note: </b> <i>Download POJO format</i> is not available for StackedEnsemble models.
+                    <b>Note:</b> <i>Download POJO format</i> is not available for StackedEnsemble models.
                     <hr />
                 </div>
                 <TrainSettings closePopup={() => this.handleClose()} parentActions={actions} />
@@ -71,15 +94,20 @@ class Leaderboard extends Step{
                                 <thead>
                                     <tr>
                                         {columnsHeader.map((columnHead, index) => (
-                                            <th key={index}>{columnHead.name}</th>
+                                            <th key={index}>
+                                                {columnHead.name}
+                                                {this.renderSortAscend(index)}
+                                                {this.renderSortDescend(index)}
+                                            </th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    { leaderboard[0].map((row, rowIndex) => (
+                                    { lbData.map((row, rowIndex) => (
                                         <tr key={rowIndex}>
                                             { columnsHeader.map((column, columnIndex) => {
-                                                let value = leaderboard[column.colNum][rowIndex];
+                                                let value = row[column.dataColName];
+                                                let key = `lb-${rowIndex}-${columnIndex}`;
                                                 if (column.type === 'number') {
                                                     value = roundUp(value * (column.multiplier || 1), 
                                                         column.precision || 4);
@@ -88,13 +116,13 @@ class Leaderboard extends Step{
 
                                                     case 'link' :
                                                         return (
-                                                            <td key={columnIndex}>
+                                                            <td key={key}>
                                                                 {this.renderModelDropdown(value)}
                                                             </td>
                                                         );
 
                                                     default:
-                                                        return (<td key={columnIndex}>{value}</td>);
+                                                        return (<td key={key}>{value}</td>);
                                                 }
                                             }) }
                                         </tr>

@@ -3,9 +3,9 @@ import Header from '../Header';
 import Main from '../Main';
 import Container from 'react-bootstrap/Container';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCheckSquare, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faCheckSquare, faCog, faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faCheckSquare, faCog);
+library.add(faCheckSquare, faCog, faAngleUp, faAngleDown);
 
 class App extends React.Component {
     render() {

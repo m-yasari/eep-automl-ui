@@ -70,6 +70,11 @@ const initialState = {
         apiError: null,
         trainData: null,
     },
+    leaderboard: {
+        data: [],
+        sortColumn: 1,
+        ascend: false
+    },
     predict: {
         model: null,
         inProgress: false,
