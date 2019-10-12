@@ -7,6 +7,7 @@ import {capture} from '../components/Capture/reducer';
 import {summary} from '../components/Summary/reducer';
 import {dataFile} from '../components/DataFile/reducer';
 import {train} from '../components/Train/reducer';
+import {leaderboard} from '../components/Leaderboard/reducer';
 import {predict} from '../components/Predict/reducer';
 
 const resetStateReducer = (state = {}, action) => {
@@ -39,6 +40,7 @@ const reducer = combineReducers({
     summary,
     dataFile,
     train,
+    leaderboard,
     predict
 });
 
