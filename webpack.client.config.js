@@ -31,7 +31,7 @@ module.exports = {
         main: './src/css/main.css'
     },
     output: {
-        path: path.resolve(__dirname, 'static'),
+        path: path.resolve(__dirname, 'dist', 'static'),
         filename: '[name].js',
         publicPath: '/'
     },

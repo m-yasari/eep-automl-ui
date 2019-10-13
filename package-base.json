@@ -1,0 +1,15 @@
+{
+  "name": "automl-ui",
+  "version": "1.0.0-alpha2",
+  "description": "Project Scout - Auto ML UI application",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/m-yasari/eep-automl-ui.git"
+  },
+  "license": "ISC",
+  "homepage": "https://github.com/m-yasari/eep-automl-ui#readme",
+  "engines": {
+    "node": ">=8.0.0"
+  }
+}
