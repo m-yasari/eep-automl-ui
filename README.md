@@ -42,5 +42,5 @@ npm start
 ```
 or
 ```
-node start
+node server
 ```
