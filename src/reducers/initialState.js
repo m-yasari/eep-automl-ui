@@ -9,6 +9,8 @@ const initialState = {
         disableSummaryTab: true,
         disableLeaderboardTab: true,
         disablePredictTab: true,
+        environment: 'production',
+        uploadFeature: false,
     },
     capture: {
         validated: false,
@@ -27,6 +29,7 @@ const initialState = {
         train: {
             validated: false,
             name: '',
+            uploadFilename: '',
             inProgress: false,
             progress: 0,
             progressMsg: null,
@@ -43,6 +46,7 @@ const initialState = {
         test: {
             validated: false,
             name: '',
+            uploadFilename: '',
             inProgress: false,
             progress: 0,
             progressMsg: null,
