@@ -12,10 +12,14 @@ export const dataFile = (state = [], action) => {
                 name: action.filename,
             });
             break;
+        case type.IMPORT_UPLOAD_FILENAME:
+            newFileImport  = Object.assign({}, fileImport, {
+                uploadFilename: action.filename,
+            });
+            break;
         case type.IMPORT_DATA_FILE_START:
-            newFileImport = Object.assign({}, _.get(initialState.dataFile, action.category), {
-                inProgress: true,
-                name: action.filename
+            newFileImport = Object.assign({}, fileImport, {
+                inProgress: true
             });
             break;
         case type.IMPORT_DATA_FILE_COMPLETED:

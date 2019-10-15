@@ -1,14 +1,26 @@
 const express = require('express');
 const request = require('request');
-const bodyParser = require('body-parser');
+const fileupload = require('./fileupload.js');
 const app = express();
 
 let targetHost = 'http://localhost:54321';
 let port = 9000;
 let host = '0.0.0.0';
+let staticPath = 'static';
+let uploadFolder = 'temp';
+let environment = process.env.ENV || "production";
+let uploadFeature = false;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get(('/env'), (req, res) => {
+  console.log("env:", environment);
+  res.send({
+    environment: environment,
+    uploadFeature: uploadFeature
+  });
+});
 
 app.get('/api/*', (req,res) => {
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
@@ -62,8 +74,6 @@ app.put('/api/*', (req,res) => {
   return request(options).pipe(res);
 });
 
-app.use(express.static('static'));
-
 processArguments = (args) => {
   for (let j = 0; j < args.length; ) {
     switch(args[j++]) {
@@ -86,13 +96,27 @@ processArguments = (args) => {
           host = args[j++];
         }
         break;
+      case '--static-path':
+        if (j<args.length) {
+          staticPath = args[j++];
+        }
+        break;
+      case '--upload-feature': // Only to use for Local machines
+        uploadFeature = true;
+        break;
     }
   }
+  console.log(`Environment: \x1b[32m${environment}\x1b[0m`);
   console.log(`Bound to: \x1b[32m${host}:${port}\x1b[0m`);
   console.log(`Target host: \x1b[32m${targetHost}\x1b[0m`);
+  console.log(`Static path: \x1b[32m${staticPath}\x1b[0m`);
+  console.log(`Upload folder: \x1b[32m${uploadFolder}\x1b[0m`);
 }
 
 processArguments(process.argv);
+app.use(express.static(staticPath));
+fileupload.initialize(app, uploadFolder);
+
 const server = app.listen(port, host, () => {
     console.log('Listening on port %d...', server.address().port);
 });

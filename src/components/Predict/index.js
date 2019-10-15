@@ -102,35 +102,31 @@ class Predict extends Step {
                         After prediction completed, 'Download Predict' button can be used to download the predicted file in CSV format.<br />
                         <b>Note: </b>Currently, only CSV format is supported.
                     </Card.Text>
-                    <Form
-                        id="capture-form"
-                    >
-                        <DataFile 
-                            statePath={statePath} 
-                            fileLabel="Test"
-                            category="test" />
-                        <Row>
-                            Selected Model: <Badge variant="success">{predict.model}</Badge>
-                            <Button onClick={() => this.onClickPredict()}
-                                disabled={!testFile.parsed}
-                                variant={testFile.parsed ? "primary" : "secondary"} >
-                                Predict
+                    <DataFile 
+                        statePath={statePath} 
+                        fileLabel="Test"
+                        category="test" />
+                    <Row>
+                        Selected Model: <Badge variant="success">{predict.model}</Badge>
+                        <Button onClick={() => this.onClickPredict()}
+                            disabled={!testFile.parsed}
+                            variant={testFile.parsed ? "primary" : "secondary"} >
+                            Predict
+                        </Button>
+                        <Collapse in={predict.predicted}>
+                            <Button href={`/api/3/DownloadDataset?frame_id=${predict.predictFrame}`}>
+                                Download Prediction
                             </Button>
-                            <Collapse in={predict.predicted}>
-                                <Button href={`/api/3/DownloadDataset?frame_id=${predict.predictFrame}`}>
-                                    Download Prediction
-                                </Button>
-                            </Collapse>
-                        </Row>
-                        <Row>
-                            { metrics ? this.renderModelMetrics(metrics) : "" }
-                        </Row>
-                        <Row className="justify-content-md-right">
-                            <Button onClick={() => this.onClickLeaderboard()} >
-                                Leaderboard
-                            </Button>
-                        </Row>
-                    </Form>
+                        </Collapse>
+                    </Row>
+                    <Row>
+                        { metrics ? this.renderModelMetrics(metrics) : "" }
+                    </Row>
+                    <Row className="justify-content-md-right">
+                        <Button onClick={() => this.onClickLeaderboard()} >
+                            Leaderboard
+                        </Button>
+                    </Row>
                    
                 </Card.Body>
             </Card>

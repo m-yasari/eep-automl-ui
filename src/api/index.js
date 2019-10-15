@@ -54,15 +54,25 @@ const apiCall = (endpoint, data, paramsObject) => {
     if (endpoint.method.toUpperCase() === 'POST') {
         const contentType = endpoint.headers['Content-Type'];
         options.body = (contentType && contentType.startsWith('application/json')) ?
-            JSON.stringify(data) :
-            mergeFormData(_.clone(endpoint.body), data);
+            JSON.stringify(data) : ( endpoint.body ? 
+            mergeFormData(_.clone(endpoint.body), data) : data);
     }
     return fetch(url, options);
+};
+
+export const getEnvironment = () => {
+    const endpoint = endpoints['env'];
+    return apiCall(endpoint);
 };
 
 export const checkFile = (path, limit = -1) => {
     const endpoint = endpoints['check-file'];
     return apiCall(endpoint, null, {src: path, limit: limit});
+};
+
+export const uploadFile = (formData) => {
+    const endpoint = endpoints['upload-file'];
+    return apiCall(endpoint, formData);
 };
 
 export const importFile = (path) => {

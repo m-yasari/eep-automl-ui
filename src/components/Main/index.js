@@ -23,8 +23,13 @@ class Main extends React.Component {
             "_whitepaper");
     }
   
+    componentDidMount() {
+        const { actions } = this.props;
+        actions.callGetEnvironment();
+    }
+
     render() {
-        const { main, actions, summary, train } = this.props;
+        const { main, summary, train } = this.props;
 
         return (
             <>

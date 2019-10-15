@@ -3,8 +3,11 @@ import * as _ from 'lodash';
 import * as Constants from '../constants';
 import {modelsConfig} from '../components/Train/config';
 import { importFile, parseSetup, parse, jobStatus, frameSummary, 
-    automlBuilder, automlLeaderboard, modelMetrics, predict } from '../api';
+    automlBuilder, automlLeaderboard, modelMetrics, predict, 
+    getEnvironment, uploadFile } from '../api';
 import mapDispatchToProps from './creator';
+
+export const setEnvironment = (env) => ({ type: type.SET_ENVIRONMENT, env: env });
 
 export const resetState = (statePath) => (
     {
@@ -40,10 +43,15 @@ export const importFilename = (category, filename) => ({
     filename: filename,
 });
 
-export const importDataFileStart = (category, filename) => ({
-    type: type.IMPORT_DATA_FILE_START,
+export const uploadFilename = (category, filename) => ({
+    type: type.IMPORT_UPLOAD_FILENAME,
     category: category,
     filename: filename,
+});
+
+export const importDataFileStart = (category) => ({
+    type: type.IMPORT_DATA_FILE_START,
+    category: category,
 });
 
 export const importDataFileComplete = (category, data) => ({
@@ -202,8 +210,44 @@ const StatusException = (status, statusText) => ({
     statusText: statusText,
 });
 
-export const callImportFile = (category) => (dispatch, getState) => {
-    const filename = _.get(getState(), `dataFile.${category}.name`);
+export const callGetEnvironment = () => (dispatch, getState) => {
+    getEnvironment().then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { // both fetching and parsing succeeded
+        dispatch(setEnvironment(json));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            console.log(`getEnvironment error: ${err.statusText}`);
+        } else {
+            console.log(`getEnvironment error: ${err}`);
+        }
+    });
+};
+
+export const callUploadFile = (category, file) => (dispatch, getState) => {
+    var formData = new FormData();
+    formData.append(`dataset`, file, file.name);
+    uploadFile(formData).then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
+        }
+        return resp.json();
+    }).then((json) => { // both fetching and parsing succeeded
+        const filename = json.file;
+        dispatch(callImportFile(category, filename));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(importDataFileDone(category, `Upload error: ${err.statusText}`));
+        } else {
+            dispatch(importDataFileDone(category, `Upload error: ${err}`));
+        }
+    });
+};
+
+export const callImportFile = (category, filename) => (dispatch, getState) => {
     importFile(filename).then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -232,7 +276,7 @@ const alignTestColumnsWithTrainColumns = (test, train) => {
 }
 
 export const callParseSetup = (category) => (dispatch, getState) => {
-    const filename = _.get(getState(), `dataFile.${category}.name`);
+    const filename = _.get(getState(), `dataFile.${category}.importedData`);
     parseSetup(filename, ['data']).then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -343,6 +387,9 @@ const callFrameSummary = (category) => (dispatch, getState) => {
     }).then((json) => { 
         dispatch(parseComplete(category, json));
         dispatch(importDataFileDone(category));
+        if (category === Constants.TRAIN_DATA ) {
+            dispatch(changeMainTab(Constants.SUMMARY_KEY));
+        }
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
             dispatch(importDataFileDone(category, `FrameSummary error: ${err.statusText}`));

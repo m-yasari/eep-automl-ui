@@ -4,6 +4,9 @@ import * as Constants from '../../constants';
 
 export const main = (state = {}, action) => {
     switch(action.type) {
+        case type.SET_ENVIRONMENT:
+            state = Object.assign({}, state, action.env);
+            break;
         case type.CHANGE_MAIN_TAB:
             state = _.clone(state);
             _.set(state, "activeKey", action.activeKey);

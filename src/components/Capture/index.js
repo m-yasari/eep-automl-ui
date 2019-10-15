@@ -43,22 +43,10 @@ class Capture extends Step {
                         </ol>
                         <b>Note: </b>Currently, only CSV format is supported.
                     </Card.Text>
-                    <Form
-                        id="capture-form"
-                    >
                         <DataFile 
                             statePath={statePath} 
                             fileLabel="Train"
                             category="train" />
-                        <Row className="justify-content-md-right">
-                            <Button onClick={() => this.onClickNext()}
-                                disabled={!trainFile.parsed}
-                                variant={trainFile.parsed ? "primary" : "secondary"} >
-                                Next
-                            </Button>
-                        </Row>
-                    </Form>
-                   
                 </Card.Body>
             </Card>
         );
