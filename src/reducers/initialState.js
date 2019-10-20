@@ -11,6 +11,8 @@ const initialState = {
         disablePredictTab: true,
         environment: 'production',
         uploadFeature: false,
+        resetErrors: [],
+        resetInProgress: false,
     },
     capture: {
         validated: false,

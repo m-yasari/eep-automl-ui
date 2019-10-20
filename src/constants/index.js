@@ -1,3 +1,6 @@
+export const SUCCESS = 1;
+export const FAILURE = 0;
+
 export const HOME_KEY = 'home';
 export const CAPTURE_KEY = 'capture';
 export const SUMMARY_KEY = 'summary';

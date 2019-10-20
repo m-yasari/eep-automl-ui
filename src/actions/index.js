@@ -4,7 +4,7 @@ import * as Constants from '../constants';
 import {modelsConfig} from '../components/Train/config';
 import { importFile, parseSetup, parse, jobStatus, frameSummary, 
     automlBuilder, automlLeaderboard, modelMetrics, predict, 
-    getEnvironment, uploadFile } from '../api';
+    getEnvironment, uploadFile, removeAllFrames, removeAllModels } from '../api';
 import mapDispatchToProps from './creator';
 
 export const setEnvironment = (env) => ({ type: type.SET_ENVIRONMENT, env: env });
@@ -24,6 +24,12 @@ export const changeState = (statePath, val, attr = null) => (
         statePath: statePath,
     }
 );
+
+export const resetErrors = (errors) => ({ type: type.RESET_ERRORS, errors: errors });
+
+export const resetStart = () => ({ type: type.RESET_START });
+
+export const resetCompleted = () => ({ type: type.RESET_COMPLETED });
 
 export const changeMainTab = (activeKey) => ({ type: type.CHANGE_MAIN_TAB, activeKey: activeKey });
 
@@ -516,7 +522,7 @@ const callTrainSummary = () => (dispatch, getState) => {
             dispatch(trainError(err));
         }
     });
-}
+};
 
 export const callModelMetrics = (modelId) => (dispatch, getState) => {
     modelMetrics(modelId).then(resp => {
@@ -533,7 +539,7 @@ export const callModelMetrics = (modelId) => (dispatch, getState) => {
             dispatch(predictError(err));
         }
     });
-}
+};
 
 export const callPredict = () => (dispatch, getState) => {
     const testFile = _.get(getState(), 'dataFile.test.parsedSetupData.destination_frame');
@@ -576,4 +582,56 @@ const callPredictSummary = () => (dispatch, getState) => {
             dispatch(predictError(err));
         }
     });
-}
+};
+
+const callAnAPI = (apiName, apiCall) => {
+    return new Promise((resolve,reject) => {
+        apiCall().then(resp => {
+            if (!resp.ok) {
+                throw new StatusException(resp.status, resp.statusText);
+            }
+            return resp.json();
+        }).then((json) => { 
+            resolve({
+                result: Constants.SUCCESS,
+                value: json
+            });
+        }).catch(err => { // either fetching or parsing failed
+            if (err.status >= 400) {
+                reject({
+                    result: Constants.FAILURE,
+                    value: `${apiName} error: ${err.statusText}`
+                });
+            } else {
+                reject({
+                    result: Constants.FAILURE,
+                    value: err
+                });
+            }
+        }
+    )});
+};
+
+export const callRemoveAllData = () => (dispatch, getState) => {
+    const removeFramesPromise = callAnAPI("RemoveFrames", removeAllFrames);
+    const removeModelsPromise = callAnAPI("RemoveModels", removeAllModels);
+    Promise.all([removeFramesPromise, removeModelsPromise]).then(values => {
+        const errors = [];
+        values.map(value => {
+            if (value.result !== Constants.SUCCESS) {
+                errors.push(value.value);
+            }
+        });
+        if (errors.length>0) {
+            dispatch(resetErrors(errors));
+            dispatch(resetCompleted());
+        } else {
+            dispatch(resetState('main'));
+            dispatch(resetState('capture'));
+            dispatch(resetState('dataFile.train'));
+        }
+      }, error => {
+        dispatch(resetErrors([error]));
+        dispatch(resetCompleted());
+      });
+};

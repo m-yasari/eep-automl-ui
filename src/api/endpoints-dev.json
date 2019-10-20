@@ -191,5 +191,23 @@
         "headers": {
             "Accept": "application/json"
         }
+    },
+    "remove-frames": {
+        "method": "DELETE",
+        "url": "/api/3/Frames",
+        "params": {
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
+    },
+    "remove-models": {
+        "method": "DELETE",
+        "url": "/api/3/Models",
+        "params": {
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
     }
 }
