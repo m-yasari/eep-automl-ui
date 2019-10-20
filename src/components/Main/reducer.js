@@ -7,6 +7,21 @@ export const main = (state = {}, action) => {
         case type.SET_ENVIRONMENT:
             state = Object.assign({}, state, action.env);
             break;
+        case type.RESET_ERRORS:
+            state = Object.assign({}, state, {
+                resetErrors: action.errors,
+            });
+            break;
+        case type.RESET_START:
+            state = Object.assign({}, state, {
+                resetInProgress: true,
+            });
+            break;
+        case type.RESET_COMPLETED:
+            state = Object.assign({}, state, {
+                resetInProgress: false,
+            });
+            break;
         case type.CHANGE_MAIN_TAB:
             state = _.clone(state);
             _.set(state, "activeKey", action.activeKey);

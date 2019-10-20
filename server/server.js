@@ -74,6 +74,18 @@ app.put('/api/*', (req,res) => {
   return request(options).pipe(res);
 });
 
+app.delete('/api/*', (req,res) => {
+  const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
+  console.log("DELETE targetUrl:", targetUrl);
+  var options = {
+    url: targetUrl,
+    method: req.method,
+    headers: {...req.headers},
+    body: prepareBody(req.body, req.headers)
+  };
+  return request(options).pipe(res);
+});
+
 processArguments = (args) => {
   for (let j = 0; j < args.length; ) {
     switch(args[j++]) {

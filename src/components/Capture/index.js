@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
@@ -43,10 +42,10 @@ class Capture extends Step {
                         </ol>
                         <b>Note: </b>Currently, only CSV format is supported.
                     </Card.Text>
-                        <DataFile 
-                            statePath={statePath} 
-                            fileLabel="Train"
-                            category="train" />
+                    <DataFile 
+                        statePath={statePath} 
+                        fileLabel="Train"
+                        category="train" />
                 </Card.Body>
             </Card>
         );

@@ -57,6 +57,7 @@ class ImportFile extends React.Component {
                                 aria-describedby={`sourceFileLabel-${fileLabel}`}
                                 name={`sourceFile-${fileLabel}`}
                                 onChange={(evt) => this.filenameChange(evt)}
+                                value={importFile.name}
                             />
                         </Col>
                     </Row>

@@ -154,3 +154,17 @@ export const modelMetrics = (modelId, exclude_fields = null) => {
     } 
     return apiCall(endpoint, null, params);
 };
+
+export const removeAllFrames = () => {
+    const endpoint = endpoints['remove-frames'];
+    const params = {
+    };
+    return apiCall(endpoint, null, params);
+};
+
+export const removeAllModels = () => {
+    const endpoint = endpoints['remove-models'];
+    const params = {
+    };
+    return apiCall(endpoint, null, params);
+};
