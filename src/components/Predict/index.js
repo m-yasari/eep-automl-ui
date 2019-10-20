@@ -16,7 +16,9 @@ import * as Constants from '../../constants';
 import { roundUp } from '../../constants/utils';
 
 const mapStateToProps = state => {
-    return ({ predict: state.predict, testFile: state.dataFile.test });
+    return ({ predict: state.predict, 
+              testFile: state.dataFile.test,
+              summary: state.summary });
 }
 
 class Predict extends Step {
@@ -69,7 +71,7 @@ class Predict extends Step {
                             let value = columnData[columnIndex][rowIndex];
                             if (column.type === 'double') {
                                 if (column.name === "Error") {
-                                    value = roundUp(value * 100, 2);
+                                    value = roundUp(value * 100, 2) + '%';
                                 } else {
                                     value = roundUp(value, 4);
                                 }
@@ -85,8 +87,9 @@ class Predict extends Step {
     }
 
     render() {
-        const { predict, actions, statePath, testFile} = this.props;
-        const metrics = _.get(predict, "modelMetrics.model_metrics[0].cm.table", null);
+        const { predict, actions, statePath, testFile, summary} = this.props;
+        const metrics = _.get(summary, `columns[${summary.target}].type`) === "Enum" ?
+            _.get(predict, "modelMetrics.model_metrics[0].cm.table", null) : null;
 
         return (
             <Card>
