@@ -38,6 +38,25 @@ class Main extends React.Component {
         actions.callGetEnvironment();
     }
 
+    renderReset(main) {
+        return (
+            <div>
+                To reset all frames and models in the ML engine click on -&gt; 
+                <a href="#" onClick={()=> this.onResetClick()}>Reset</a>.
+                <Collapse in={main.resetInProgress}>
+                    <Spinner animation="border" role="status">
+                        <span className="sr-only">...Resetting</span>
+                    </Spinner>
+                </Collapse>
+                <Collapse in={main.resetErrors.length > 0}>
+                <div>
+                    <Alert varient="warning">Reset failed: {_.get(main, "resetErrors[0].value", "")}</Alert>
+                </div>
+                </Collapse>
+            </div>
+        );
+    }
+
     render() {
         const { main } = this.props;
 
@@ -49,19 +68,8 @@ class Main extends React.Component {
                 Project Scout provides AutoML capabilities for users with minimal knowledge of AI/ML.<br />
                 Find more information on this <a href="#" 
                     onClick={()=> this.onWhitePaperClick()}
-                    >whitepaper</a>.<br />
-                To reset all frames and models in the ML engine click on -&gt; 
-                    <a href="#" onClick={()=> this.onResetClick()}>Reset</a>.
-                    <Collapse in={main.resetInProgress}>
-                        <Spinner animation="border" role="status">
-                            <span className="sr-only">...Resetting</span>
-                        </Spinner>
-                    </Collapse>
-                    <Collapse in={main.resetErrors.length > 0}>
-                    <div>
-                        <Alert varient="warning">Reset failed: {_.get(main, "resetErrors[0].value", "")}</Alert>
-                    </div>
-                    </Collapse>
+                    >whitepaper</a>.
+                {/*this.renderReset(main)*/}
                 </div>         
             </Collapse>
             </Row>
