@@ -25,11 +25,17 @@ app.get(('/env'), (req, res) => {
 app.get('/api/*', (req,res) => {
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
   console.log("GET targetUrl:", targetUrl);
-  return request({
+  var options = {
     url: targetUrl,
     method: req.method,
     headers: {...req.headers}
-  }).pipe(res);
+  };
+  request(options)
+    .on('error', err => {
+      console.log(err);
+      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+    })
+    .pipe(res);
 });
 
 const prepareFormData = (data) => {
@@ -59,7 +65,12 @@ app.post('/api/*', (req,res) => {
     headers: {...req.headers},
     body: prepareBody(req.body, req.headers)
   };
-  return request(options).pipe(res);
+  request(options)
+    .on('error', err => {
+      console.log(err);
+      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+    })
+    .pipe(res);
 });
 
 app.put('/api/*', (req,res) => {
@@ -71,7 +82,12 @@ app.put('/api/*', (req,res) => {
     headers: {...req.headers},
     body: prepareBody(req.body, req.headers)
   };
-  return request(options).pipe(res);
+  request(options)
+    .on('error', err => {
+      console.log(err);
+      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+    })
+    .pipe(res);
 });
 
 app.delete('/api/*', (req,res) => {
@@ -83,7 +99,12 @@ app.delete('/api/*', (req,res) => {
     headers: {...req.headers},
     body: prepareBody(req.body, req.headers)
   };
-  return request(options).pipe(res);
+  request(options)
+    .on('error', err => {
+      console.log(err);
+      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+    })
+    .pipe(res);
 });
 
 processArguments = (args) => {
