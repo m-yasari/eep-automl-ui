@@ -111,6 +111,9 @@ class Leaderboard extends Step{
                                                 if (column.type === 'number') {
                                                     value = roundUp(value * (column.multiplier || 1), 
                                                         column.precision || 4);
+                                                    if (column.multiplier===100) {
+                                                        value = value + '%';
+                                                    }
                                                 }
                                                 switch(column.type){
 
