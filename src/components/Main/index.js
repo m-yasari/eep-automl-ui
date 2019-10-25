@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import mapDispatchToProps from '../../actions/creator';
-import { Tabs, Tab, Row, Collapse, Alert, Spinner, Button } from 'react-bootstrap';
+import { Tabs, Tab, Row, Collapse, Alert, Spinner, Button, Modal } from 'react-bootstrap';
 import Capture from '../Capture';
 import Summary from '../Summary';
 import * as Constants from '../../constants';
@@ -12,7 +12,7 @@ import Leaderboard from '../Leaderboard';
 import Predict from '../Predict';
 import { DH_NOT_SUITABLE_GENERATOR } from 'constants';
 
-const mapStateToProps = state => ({ main: state.main });
+const mapStateToProps = state => ({ main: state.main, features: state.features });
 
 class Main extends React.Component {
     constructor(props, context) {
@@ -31,34 +31,50 @@ class Main extends React.Component {
             actions.resetStart();
             actions.callRemoveAllData();
         }
+        actions.openResetPopup(false);
     }
   
     componentDidMount() {
         const { actions } = this.props;
         actions.callGetEnvironment();
     }
-
     renderReset(main) {
+        const { actions } = this.props;
         return (
             <div>
                 To reset all frames and models in the ML engine click on -&gt; 
-                <a href="#" onClick={()=> this.onResetClick()}>Reset</a>.
+                <a href="#" onClick={() => actions.openResetPopup(true)}>Reset</a>.
                 <Collapse in={main.resetInProgress}>
                     <Spinner animation="border" role="status">
                         <span className="sr-only">...Resetting</span>
                     </Spinner>
                 </Collapse>
-                <Collapse in={main.resetErrors.length > 0}>
+                <Collapse in={main.resetError}>
                 <div>
-                    <Alert varient="warning">Reset failed: {_.get(main, "resetErrors[0].value", "")}</Alert>
+                    <Alert varient="warning">Reset failed: {_.get(main, "resetError", "")}</Alert>
                 </div>
                 </Collapse>
+                <Modal show={main.resetPopup} onHide={() => actions.openResetPopup(false)}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Reset All</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Do you want to reset all frames, models, and data from ML Engine?<br />
+                        All processed/trained models will be lost, even models created by other users.</Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={() => actions.openResetPopup(false)}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={()=> this.onResetClick()}>
+                        Reset
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         );
     }
 
     render() {
-        const { main } = this.props;
+        const { main, features } = this.props;
 
         return (
             <>
@@ -69,7 +85,7 @@ class Main extends React.Component {
                 Find more information on this <a href="#" 
                     onClick={()=> this.onWhitePaperClick()}
                     >whitepaper</a>.
-                {/*this.renderReset(main)*/}
+                {features.resetFeature ? this.renderReset(main) : ""}
                 </div>         
             </Collapse>
             </Row>

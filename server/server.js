@@ -10,6 +10,7 @@ let staticPath = 'static';
 let uploadFolder = 'temp';
 let environment = process.env.ENV || "production";
 let uploadFeature = false;
+let resetFeature = false;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,7 +19,8 @@ app.get(('/env'), (req, res) => {
   console.log("env:", environment);
   res.send({
     environment: environment,
-    uploadFeature: uploadFeature
+    uploadFeature: uploadFeature,
+    resetFeature: resetFeature,
   });
 });
 
@@ -33,7 +35,7 @@ app.get('/api/*', (req,res) => {
   request(options)
     .on('error', err => {
       console.log(err);
-      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+      res.status('504').send(`Failed connecting to engine: ${err.code}`);
     })
     .pipe(res);
 });
@@ -68,7 +70,7 @@ app.post('/api/*', (req,res) => {
   request(options)
     .on('error', err => {
       console.log(err);
-      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+      res.status('504').send(`Failed connecting to engine: ${err.code}`);
     })
     .pipe(res);
 });
@@ -85,7 +87,7 @@ app.put('/api/*', (req,res) => {
   request(options)
     .on('error', err => {
       console.log(err);
-      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+      res.status('504').send(`Failed connecting to engine: ${err.code}`);
     })
     .pipe(res);
 });
@@ -102,7 +104,7 @@ app.delete('/api/*', (req,res) => {
   request(options)
     .on('error', err => {
       console.log(err);
-      res.status('500').send(`Failed connecting to engine: ${err.code}`);
+      res.status('504').send(`Failed connecting to engine: ${err.code}`);
     })
     .pipe(res);
 });
@@ -136,6 +138,9 @@ processArguments = (args) => {
         break;
       case '--upload-feature': // Only to use for Local machines
         uploadFeature = true;
+        break;
+      case '--reset-feature':
+        resetFeature = true;
         break;
     }
   }

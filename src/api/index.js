@@ -168,3 +168,10 @@ export const removeAllModels = () => {
     };
     return apiCall(endpoint, null, params);
 };
+
+export const removeAll = () => {
+    const endpoint = endpoints['remove-all'];
+    const params = {
+    };
+    return apiCall(endpoint, null, params);
+};

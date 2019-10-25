@@ -1,9 +1,10 @@
 export const SET_ENVIRONMENT = 'SET_ENVIRONMENT';
 
 export const RESET_STATE = 'RESET_STATE';
-export const RESET_ERRORS = 'RESET_ERRORS';
+export const RESET_ERROR = 'RESET_ERROR';
 export const RESET_START = 'RESET_START';
 export const RESET_COMPLETED = 'RESET_COMPLETED';
+export const RESET_POPUP = 'RESET_POPUP';
 export const CHANGE_STATE = 'CHANGE_STATE';
 export const CHANGE_MAIN_TAB = 'CHANGE_MAIN_TAB';
 export const DISABLE_SUMMARY_TAB = 'DISABLE_SUMMARY_TAB';
