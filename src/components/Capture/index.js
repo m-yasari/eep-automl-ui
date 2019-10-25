@@ -18,12 +18,6 @@ class Capture extends Step {
         super(props, context);
     }
   
-    onClickNext() {
-        const { actions, trainFile} = this.props;
-        actions.changeMainTab(Constants.SUMMARY_KEY);
-        actions.setDisableSummaryFlag(false);
-    }
-
     render() {
         const { capture, actions, statePath, trainFile} = this.props;
 

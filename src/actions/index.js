@@ -397,6 +397,7 @@ const callFrameSummary = (category) => (dispatch, getState) => {
         dispatch(importDataFileDone(category));
         if (category === Constants.TRAIN_DATA ) {
             dispatch(changeMainTab(Constants.SUMMARY_KEY));
+            dispatch(setDisableSummaryFlag(false));
         }
     }).catch(err => { // either fetching or parsing failed
         if (err.status >= 400) {
