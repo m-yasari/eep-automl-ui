@@ -3,16 +3,20 @@ import * as Constants from '../constants';
 
 const initialState = {
     // initialState
+    features: {
+        environment: 'production',
+        uploadFeature: false,
+        resetFeature: false,
+    },
     main: {
         activeKey: Constants.CAPTURE_KEY,
         disableTrainTab: true,
         disableSummaryTab: true,
         disableLeaderboardTab: true,
         disablePredictTab: true,
-        environment: 'production',
-        uploadFeature: false,
-        resetErrors: [],
+        resetError: null,
         resetInProgress: false,
+        resetPopup: false,
     },
     capture: {
         validated: false,

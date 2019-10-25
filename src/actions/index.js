@@ -4,7 +4,7 @@ import * as Constants from '../constants';
 import {modelsConfig} from '../components/Train/config';
 import { importFile, parseSetup, parse, jobStatus, frameSummary, 
     automlBuilder, automlLeaderboard, modelMetrics, predict, 
-    getEnvironment, uploadFile, removeAllFrames, removeAllModels } from '../api';
+    getEnvironment, uploadFile, removeAll } from '../api';
 import mapDispatchToProps from './creator';
 
 export const setEnvironment = (env) => ({ type: type.SET_ENVIRONMENT, env: env });
@@ -25,7 +25,7 @@ export const changeState = (statePath, val, attr = null) => (
     }
 );
 
-export const resetErrors = (errors) => ({ type: type.RESET_ERRORS, errors: errors });
+export const resetError = (error) => ({ type: type.RESET_ERROR, error: error });
 
 export const resetStart = () => ({ type: type.RESET_START });
 
@@ -42,6 +42,8 @@ export const setDisableLeaderboardFlag = (flag) => ({ type: type.DISABLE_LEADERB
 export const setDisablePredictFlag = (flag) => ({ type: type.DISABLE_PREDICT_TAB, flag: flag});
 
 export const openSettingsTrain = (showPopup) => ({ type: type.OPEN_SETTINGS_TRAIN, showPopup: showPopup});
+
+export const openResetPopup = (showPopup) => ({ type: type.RESET_POPUP, showPopup: showPopup});
 
 export const importFilename = (category, filename) => ({
     type: type.IMPORT_FILENAME,
@@ -579,59 +581,27 @@ const callPredictSummary = () => (dispatch, getState) => {
         if (err.status >= 400) {
             dispatch(predictError(`PredictSummary error: ${err.statusText}`));
         } else {
-            dispatch(predictError(err));
+            dispatch(predictError(`PredictSummary error: ${err}`));
         }
     });
 };
 
-const callAnAPI = (apiName, apiCall) => {
-    return new Promise((resolve,reject) => {
-        apiCall().then(resp => {
-            if (!resp.ok) {
-                throw new StatusException(resp.status, resp.statusText);
-            }
-            return resp.json();
-        }).then((json) => { 
-            resolve({
-                result: Constants.SUCCESS,
-                value: json
-            });
-        }).catch(err => { // either fetching or parsing failed
-            if (err.status >= 400) {
-                reject({
-                    result: Constants.FAILURE,
-                    value: `${apiName} error: ${err.statusText}`
-                });
-            } else {
-                reject({
-                    result: Constants.FAILURE,
-                    value: err
-                });
-            }
-        }
-    )});
-};
-
 export const callRemoveAllData = () => (dispatch, getState) => {
-    const removeFramesPromise = callAnAPI("RemoveFrames", removeAllFrames);
-    const removeModelsPromise = callAnAPI("RemoveModels", removeAllModels);
-    Promise.all([removeFramesPromise, removeModelsPromise]).then(values => {
-        const errors = [];
-        values.map(value => {
-            if (value.result !== Constants.SUCCESS) {
-                errors.push(value.value);
-            }
-        });
-        if (errors.length>0) {
-            dispatch(resetErrors(errors));
-            dispatch(resetCompleted());
-        } else {
-            dispatch(resetState('main'));
-            dispatch(resetState('capture'));
-            dispatch(resetState('dataFile.train'));
+    removeAll().then(resp => {
+        if (!resp.ok) {
+            throw new StatusException(resp.status, resp.statusText);
         }
-      }, error => {
-        dispatch(resetErrors([error]));
+        return resp.json();
+    }).then((json) => { 
+        dispatch(resetState('main'));
+        dispatch(resetState('capture'));
+        dispatch(resetState('dataFile.train'));
+    }).catch(err => { // either fetching or parsing failed
+        if (err.status >= 400) {
+            dispatch(resetError(`Reset error: ${err.statusText}`));
+        } else {
+            dispatch(resetError(`Reset error: ${err}`));
+        }
         dispatch(resetCompleted());
-      });
+    });
 };

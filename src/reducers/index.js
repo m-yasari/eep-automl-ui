@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as type from '../actions/types';
 import initialState from './initialState';
 import {main} from '../components/Main/reducer';
+import {features} from '../components/Main/features-reducer';
 import {capture} from '../components/Capture/reducer';
 import {summary} from '../components/Summary/reducer';
 import {dataFile} from '../components/DataFile/reducer';
@@ -36,6 +37,7 @@ const changeStateReducer = (state = {}, action) => {
 
 const reducer = combineReducers({
     main,
+    features,
     capture,
     summary,
     dataFile,

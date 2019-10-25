@@ -209,5 +209,14 @@
         "headers": {
             "Accept": "application/json"
         }
+    },
+    "remove-all": {
+        "method": "DELETE",
+        "url": "/api/3/DKV",
+        "params": {
+        },
+        "headers": {
+            "Accept": "application/json"
+        }
     }
 }

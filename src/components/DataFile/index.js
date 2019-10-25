@@ -16,7 +16,7 @@ import { Certificate } from 'crypto';
 
 const mapStateToProps = (state, ownProps) => {
     return ({ importFile: _.get(state, ['dataFile', ownProps.category]),
-            uploadFeature: state.main.uploadFeature });
+            uploadFeature: state.features.uploadFeature });
 }
 
 class ImportFile extends React.Component {
