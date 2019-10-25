@@ -34,7 +34,9 @@ class Train extends Step{
      */
     onClickNext() {
         const { actions, train } = this.props;
-        actions.callAutoTrain();
+        // UTC time in format YYYYMMDD_HHmmss
+        const now = new Date().toISOString().replace(/[-:]/g,'').replace(/T/,'_').substr(0,15);
+        actions.callAutoTrain(now);
     }
 
     /**

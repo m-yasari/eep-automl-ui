@@ -141,8 +141,9 @@ export const applyTrainSettings = (data) => ({
     data: data
 });
 
-export const trainStart = () => ({
-    type: type.TRAIN_START
+export const trainStart = (time) => ({
+    type: type.TRAIN_START,
+    time: time,
 });
 
 export const trainInProgress = (job) => ({
@@ -408,7 +409,11 @@ const callFrameSummary = (category) => (dispatch, getState) => {
     });
 };
 
-const prepareAutoTrainReqPayload = (getState) => {
+const buildProjectName = (projectName, projectTime) => (
+    `${projectName}_${projectTime}`
+);
+
+const prepareAutoTrainReqPayload = (now, getState) => {
     let frame = _.get(getState(), `dataFile.train.parsedSetupData.destination_frame`);
     const {train, summary} = getState();
     const algos = [];
@@ -452,7 +457,7 @@ const prepareAutoTrainReqPayload = (getState) => {
             //"stopping_rounds":"${stopping_rounds}",
             //"stopping_tolerance":"${stopping_tolerance}"
           },
-          "project_name": train.projectName
+          "project_name": buildProjectName(train.projectName, now)
         }
     };
     if (train.maxModelNumbers) {
@@ -464,10 +469,10 @@ const prepareAutoTrainReqPayload = (getState) => {
     return trainData;
 };
 
-export const callAutoTrain = () => (dispatch, getState) => {
-    const trainData = prepareAutoTrainReqPayload(getState);
+export const callAutoTrain = (now) => (dispatch, getState) => {
+    const trainData = prepareAutoTrainReqPayload(now, getState);
 
-    dispatch(trainStart());
+    dispatch(trainStart(now));
     automlBuilder(trainData).then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -507,7 +512,8 @@ const monitorTrainInProgress = (parseResponse) => (dispatch, getState) => {
 };
 
 const callTrainSummary = () => (dispatch, getState) => {
-    let projectName = _.get(getState(), `train.projectName`);
+    let projectName = buildProjectName(_.get(getState(), "train.projectName"), 
+            _.get(getState(), "train.trainTime"));
     automlLeaderboard(projectName, 'event_log,event_log_table').then(resp => {
         if (!resp.ok) {
             throw new StatusException(resp.status, resp.statusText);
@@ -547,7 +553,8 @@ export const callModelMetrics = (modelId) => (dispatch, getState) => {
 export const callPredict = () => (dispatch, getState) => {
     const testFile = _.get(getState(), 'dataFile.test.parsedSetupData.destination_frame');
     const model = _.get(getState(), 'predict.model');
-    const predictFrame = _.get(getState(), 'train.projectName')+".predict";
+    const predictFrame = buildProjectName(_.get(getState(), 'train.projectName'), 
+                    _.get(getState(), 'train.trainTime'))+".predict";
 
     dispatch(predictFrameName(predictFrame));
     dispatch(predictStart());

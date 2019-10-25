@@ -46,6 +46,7 @@ export const train = (state = {}, action) => {
                 progressMsg: '',
                 trained: false,
                 trainData: null,
+                trainTime: action.time,
             });
             break;
         case type.TRAIN_IN_PROGRESS:
