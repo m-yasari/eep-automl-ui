@@ -1,6 +1,8 @@
 const express = require('express');
 const request = require('request');
+const crypto = require('crypto');
 const fileupload = require('./fileupload.js');
+const entitlements = require('./entitlements.json');
 const app = express();
 
 let targetHost = 'http://localhost:54321';
@@ -11,20 +13,36 @@ let uploadFolder = 'temp';
 let environment = process.env.ENV || "production";
 let uploadFeature = false;
 let resetFeature = false;
+let authFile = null;
+
+const DEFAULT_ROLE = 'default';
+const ADMIN_ROLE = 'admin';
+let authTable = null;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get(('/env'), (req, res) => {
+  const role = isAuthenticated(req, res);
+  if (!role) {
+    return;
+  }
   console.log("env:", environment);
   res.send({
     environment: environment,
     uploadFeature: uploadFeature,
-    resetFeature: resetFeature,
+    resetFeature: resetFeature || (role === ADMIN_ROLE),
   });
 });
 
 app.get('/api/*', (req,res) => {
+  const role = isAuthenticated(req, res);
+  if (!role) {
+    return;
+  }
+  if (!hasAccess(role, "GET", req, res)) {
+    return;
+  }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
   console.log("GET targetUrl:", targetUrl);
   var options = {
@@ -59,6 +77,13 @@ const prepareBody = (bodyObject, headers) => {
 };
 
 app.post('/api/*', (req,res) => {
+  const role = isAuthenticated(req, res);
+  if (!role) {
+    return;
+  }
+  if (!hasAccess(role, "POST", req, res)) {
+    return;
+  }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
   console.log("POST targetUrl:", targetUrl);
   var options = {
@@ -76,6 +101,13 @@ app.post('/api/*', (req,res) => {
 });
 
 app.put('/api/*', (req,res) => {
+  const role = isAuthenticated(req, res);
+  if (!role) {
+    return;
+  }
+  if (!hasAccess(role, "PUT", req, res)) {
+    return;
+  }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
   console.log("PUT targetUrl:", targetUrl);
   var options = {
@@ -93,6 +125,13 @@ app.put('/api/*', (req,res) => {
 });
 
 app.delete('/api/*', (req,res) => {
+  const role = isAuthenticated(req, res);
+  if (!role) {
+    return;
+  }
+  if (!hasAccess(role, "DELETE", req, res)) {
+    return;
+  }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
   console.log("DELETE targetUrl:", targetUrl);
   var options = {
@@ -108,6 +147,71 @@ app.delete('/api/*', (req,res) => {
     })
     .pipe(res);
 });
+
+const hasAccess = (role, method, req, res) => {
+  const accessList4Role = entitlements[role];
+  if (accessList4Role) {
+    const allowedUrls = accessList4Role[method];
+    if (allowedUrls) {
+      for (let i in allowedUrls) {
+        if (req.originalUrl.startsWith(allowedUrls[i])) {
+          return true;
+        }
+      }
+    }
+  }
+  // Not entitled...
+  res.status(403).send('Forbidden.');
+  return false;
+};
+
+const isAuthenticated = (req, res) => {
+  if (!authTable) {
+    return DEFAULT_ROLE;
+  }
+  const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
+  const [login, password] = new Buffer(b64auth, 'base64').toString().split(':');
+
+  const credentials = authTable[login];
+  if (credentials) {
+    const hash = crypto.createHash('sha256');
+    hash.update(password);
+    if (credentials.password === hash.digest('hex')) {
+      return credentials.role;
+    }
+  }
+
+  // Access denied...
+  res.set('WWW-Authenticate', 'Basic realm="project-scout"');
+  res.status(401).send('Authentication required.');
+  return null;
+}
+
+loadAuthFile = (file) => {
+  if (file) {
+    request.get(file, (error, response, body) => {
+      if (response.statusCode == 200) {
+        const lines = body.split('\n');
+        lines && lines.map(line => {
+          line = line.trim();
+          if (!line.startsWith('#')) {
+            const items = line.split(' ');
+            if (items.length>=2) {
+              authTable = authTable || {};
+              authTable[items[0]] = {
+                password: items[1],
+                role: items.length>2 ? items[2] : DEFAULT_ROLE
+              }
+            }
+          }
+        });
+      } else {
+        console.log('error in loading auth-file: '+ response.statusCode);
+        authTable = null;
+      }
+    });
+  }
+}
 
 processArguments = (args) => {
   for (let j = 0; j < args.length; ) {
@@ -136,6 +240,11 @@ processArguments = (args) => {
           staticPath = args[j++];
         }
         break;
+      case '--auth-file':
+          if (j<args.length) {
+            authFile = args[j++];
+          }
+          break;
       case '--upload-feature': // Only to use for Local machines
         uploadFeature = true;
         break;
@@ -158,3 +267,5 @@ fileupload.initialize(app, uploadFolder);
 const server = app.listen(port, host, () => {
     console.log('Listening on port %d...', server.address().port);
 });
+
+loadAuthFile(authFile);

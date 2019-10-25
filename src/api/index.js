@@ -22,7 +22,7 @@ const mergeFormData = (template, data) => {
     return bodyArr.join('&');
 };
 
-const apiCall = (endpoint, data, paramsObject) => {
+const apiCall = (endpoint, data, paramsObject, authorizarion) => {
     let url = endpoint.url;
     const re = /\{[A-Za-z0-9_]*\}/g;
 
@@ -47,9 +47,13 @@ const apiCall = (endpoint, data, paramsObject) => {
         });
         url = `${url}?${paramArr.join('&')}`
     }
+    const headers = endpoint.headers || {};
+    if (authorizarion) {
+        headers.Authorizarion = authorizarion;
+    }
     const options = {
         method: endpoint.method,
-        headers: endpoint.headers || {},
+        headers: headers,
     };
     if (endpoint.method.toUpperCase() === 'POST') {
         const contentType = endpoint.headers['Content-Type'];
@@ -60,9 +64,9 @@ const apiCall = (endpoint, data, paramsObject) => {
     return fetch(url, options);
 };
 
-export const getEnvironment = () => {
+export const getEnvironment = (authorizarion) => {
     const endpoint = endpoints['env'];
-    return apiCall(endpoint);
+    return apiCall(endpoint, null, null, authorizarion);
 };
 
 export const checkFile = (path, limit = -1) => {

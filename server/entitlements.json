@@ -1,0 +1,45 @@
+
+{
+    "admin": {
+        "POST": [
+            "/uploadfile",
+            "/api/3/ParseSetup",
+            "/api/3/Parse",
+            "/api/99/AutoMLBuilder",
+            "/api/3/Predictions/models/"
+        ],
+        "GET": [
+            "/api/3/ImportFiles",
+            "/api/3/Jobs/",
+            "/api/3/Frames",
+            "/api/99/AutoML/",
+            "/api/3/ModelMetrics/models/",
+            "/api/3/DownloadDataset",
+            "/api/3/Models/",
+            "/api/3/Models.java/"
+        ],
+        "DELETE": [
+            "/api/3/Frames",
+            "/api/3/Models",
+            "/api/3/DKV"
+        ]
+    },
+    "default": {
+        "POST": [
+            "/api/3/ParseSetup",
+            "/api/3/Parse",
+            "/api/99/AutoMLBuilder",
+            "/api/3/Predictions/models/"
+        ],
+        "GET": [
+            "/api/3/ImportFiles",
+            "/api/3/Jobs/",
+            "/api/3/Frames",
+            "/api/99/AutoML/",
+            "/api/3/ModelMetrics/models/",
+            "/api/3/DownloadDataset",
+            "/api/3/Models/",
+            "/api/3/Models.java/"
+        ]
+    }
+}
