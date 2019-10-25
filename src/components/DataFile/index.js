@@ -95,8 +95,8 @@ class ImportFile extends React.Component {
                                 (importFile.name.length > 0 || importFile.uploadFilename.length > 0)) ? 
                                 "primary" : "secondary"} >
                             <Collapse in={importFile.inProgress}>
-                                <Spinner as="span"
-                                    animation="grow" size="sm"
+                                <Spinner as="span" 
+                                    animation="border" size="sm"
                                     role="status" aria-hidden="true"
                                     />
                             </Collapse>
