@@ -350,7 +350,6 @@ const monitorParseInProgress = (category, parseResponse) => (dispatch, getState)
     const id = setInterval(() => {
         callJobStatus(jobId).then(
             resp => {
-                console.log(resp);
                 let job = _.get(resp, 'jobs[0]');
                 dispatch(parseInProgress(category, job));
                 if (job.status === 'DONE') {
@@ -418,8 +417,11 @@ const prepareAutoTrainReqPayload = (now, getState) => {
     const {train, summary} = getState();
     const algos = [];
     modelsConfig.map((item) => {
-        if (train.models.indexOf(item.id) !== -1) {
-            algos.push(item.model);
+        if (item.classification ||
+            _.get(summary, `columns[${summary.target}].type`) !== "Enum") {
+            if (train.models.indexOf(item.id) !== -1) {
+                algos.push(item.model);
+            }
         }
     });
     const ignoredColumns = [];
@@ -494,7 +496,6 @@ const monitorTrainInProgress = (parseResponse) => (dispatch, getState) => {
     const id = setInterval(() => {
         callJobStatus(jobId).then(
             resp => {
-                console.log(resp);
                 let job = _.get(resp, 'jobs[0]');
                 dispatch(trainInProgress(job));
                 if (job.status === 'DONE') {

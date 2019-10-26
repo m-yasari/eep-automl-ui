@@ -19,7 +19,8 @@ export const dataFile = (state = [], action) => {
             break;
         case type.IMPORT_DATA_FILE_START:
             newFileImport = Object.assign({}, fileImport, {
-                inProgress: true
+                inProgress: true,
+                apiError: null,
             });
             break;
         case type.IMPORT_DATA_FILE_COMPLETED:
@@ -31,7 +32,7 @@ export const dataFile = (state = [], action) => {
         case type.IMPORT_FILE_DONE:
             newFileImport = Object.assign({}, fileImport, {
                 inProgress: false,
-                apiError: action.error
+                apiError: action.error,
             });
             break;
         case type.PARSE_SETUP_START:
