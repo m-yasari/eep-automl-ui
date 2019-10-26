@@ -418,8 +418,12 @@ const prepareAutoTrainReqPayload = (now, getState) => {
     const {train, summary} = getState();
     const algos = [];
     modelsConfig.map((item) => {
-        if (train.models.indexOf(item.id) !== -1) {
-            algos.push(item.model);
+        console.log("check for classification", item.model, item.classification, _.get(summary, `columns[${summary.target}].type`));
+        if (item.classification ||
+            _.get(summary, `columns[${summary.target}].type`) !== "Enum") {
+            if (train.models.indexOf(item.id) !== -1) {
+                algos.push(item.model);
+            }
         }
     });
     const ignoredColumns = [];
