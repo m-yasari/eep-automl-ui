@@ -184,7 +184,7 @@ class Train extends Step{
                     <Card.Body>
                         <Button onClick={() => this.onClickSettings()} style={{ float: 'right'}} 
                             disabled={train.inProgress}>
-                            <FontAwesomeIcon icon='cog' size='2x' />
+                            <FontAwesomeIcon icon='cog' size='1.5x' /> Settings
                         </Button>
                         <Form id="train-form">
                             <Table striped bordered hover>
