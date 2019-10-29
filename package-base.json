@@ -1,6 +1,6 @@
 {
   "name": "automl-ui",
-  "version": "1.0.0-alpha5",
+  "version": "1.0.0-alpha6",
   "description": "Project Scout - Auto ML UI application",
   "main": "server.js",
   "repository": {

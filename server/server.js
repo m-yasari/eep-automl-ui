@@ -1,12 +1,17 @@
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const express = require('express');
 const request = require('request');
-const crypto = require('crypto');
 const fileupload = require('./fileupload.js');
-const entitlements = require('./entitlements.json');
+const entitlements = require('./entitlements.js');
+const authentication = require('./authentication.js');
+const constants = require('./constants.js');
 const app = express();
 
 let targetHost = 'http://localhost:54321';
 let port = 9000;
+let sslPort = 9443;
 let host = '0.0.0.0';
 let staticPath = 'static';
 let uploadFolder = 'temp';
@@ -14,16 +19,14 @@ let environment = process.env.ENV || "production";
 let uploadFeature = false;
 let resetFeature = false;
 let authFile = null;
-
-const DEFAULT_ROLE = 'default';
-const ADMIN_ROLE = 'admin';
-let authTable = null;
+let privateKeyFile = null;
+let publicKeyFile = null;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get(('/env'), (req, res) => {
-  const role = isAuthenticated(req, res);
+  const role = authentication.isAuthenticated(req, res);
   if (!role) {
     return;
   }
@@ -31,16 +34,16 @@ app.get(('/env'), (req, res) => {
   res.send({
     environment: environment,
     uploadFeature: uploadFeature,
-    resetFeature: resetFeature || (role === ADMIN_ROLE),
+    resetFeature: resetFeature || (role === constants.ADMIN_ROLE),
   });
 });
 
 app.get('/api/*', (req,res) => {
-  const role = isAuthenticated(req, res);
+  const role = authentication.isAuthenticated(req, res);
   if (!role) {
     return;
   }
-  if (!hasAccess(role, "GET", req, res)) {
+  if (!entitlements.hasAccess(role, "GET", req, res)) {
     return;
   }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
@@ -77,11 +80,11 @@ const prepareBody = (bodyObject, headers) => {
 };
 
 app.post('/api/*', (req,res) => {
-  const role = isAuthenticated(req, res);
+  const role = authentication.isAuthenticated(req, res);
   if (!role) {
     return;
   }
-  if (!hasAccess(role, "POST", req, res)) {
+  if (!entitlements.hasAccess(role, "POST", req, res)) {
     return;
   }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
@@ -101,11 +104,11 @@ app.post('/api/*', (req,res) => {
 });
 
 app.put('/api/*', (req,res) => {
-  const role = isAuthenticated(req, res);
+  const role = authentication.isAuthenticated(req, res);
   if (!role) {
     return;
   }
-  if (!hasAccess(role, "PUT", req, res)) {
+  if (!entitlements.hasAccess(role, "PUT", req, res)) {
     return;
   }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
@@ -125,11 +128,11 @@ app.put('/api/*', (req,res) => {
 });
 
 app.delete('/api/*', (req,res) => {
-  const role = isAuthenticated(req, res);
+  const role = authentication.isAuthenticated(req, res);
   if (!role) {
     return;
   }
-  if (!hasAccess(role, "DELETE", req, res)) {
+  if (!entitlements.hasAccess(role, "DELETE", req, res)) {
     return;
   }
   const targetUrl = `${targetHost}${req.originalUrl.substring(4)}`;
@@ -148,71 +151,6 @@ app.delete('/api/*', (req,res) => {
     .pipe(res);
 });
 
-const hasAccess = (role, method, req, res) => {
-  const accessList4Role = entitlements[role];
-  if (accessList4Role) {
-    const allowedUrls = accessList4Role[method];
-    if (allowedUrls) {
-      for (let i in allowedUrls) {
-        if (req.originalUrl.startsWith(allowedUrls[i])) {
-          return true;
-        }
-      }
-    }
-  }
-  // Not entitled...
-  res.status(403).send('Forbidden.');
-  return false;
-};
-
-const isAuthenticated = (req, res) => {
-  if (!authTable) {
-    return DEFAULT_ROLE;
-  }
-  const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
-  const [login, password] = new Buffer(b64auth, 'base64').toString().split(':');
-
-  const credentials = authTable[login];
-  if (credentials) {
-    const hash = crypto.createHash('sha256');
-    hash.update(password);
-    if (credentials.password === hash.digest('hex')) {
-      return credentials.role;
-    }
-  }
-
-  // Access denied...
-  res.set('WWW-Authenticate', 'Basic realm="project-scout"');
-  res.status(401).send('Authentication required.');
-  return null;
-}
-
-loadAuthFile = (file) => {
-  if (file) {
-    request.get(file, (error, response, body) => {
-      if (response.statusCode == 200) {
-        const lines = body.split('\n');
-        lines && lines.map(line => {
-          line = line.trim();
-          if (!line.startsWith('#')) {
-            const items = line.split(' ');
-            if (items.length>=2) {
-              authTable = authTable || {};
-              authTable[items[0]] = {
-                password: items[1],
-                role: items.length>2 ? items[2] : DEFAULT_ROLE
-              }
-            }
-          }
-        });
-      } else {
-        console.log('error in loading auth-file: '+ response.statusCode);
-        authTable = null;
-      }
-    });
-  }
-}
-
 processArguments = (args) => {
   for (let j = 0; j < args.length; ) {
     switch(args[j++]) {
@@ -230,6 +168,12 @@ processArguments = (args) => {
           port = isNaN(newPort) ? port : newPort;
         }
         break;
+      case '--ssl-port':
+        if (j<args.length) {
+          let newSSLPort = parseInt(args[j++]);
+          sslPort = isNaN(newSSLPort) ? sslPort : newSSLPort;
+        }
+        break;
       case '--host':
         if (j<args.length) {
           host = args[j++];
@@ -245,6 +189,16 @@ processArguments = (args) => {
             authFile = args[j++];
           }
           break;
+      case '--private-key':
+        if (j<args.length) {
+          privateKeyFile = args[j++];
+        }
+        break;
+      case '--public-key':
+        if (j<args.length) {
+          publicKeyFile = args[j++];
+        }
+        break;
       case '--upload-feature': // Only to use for Local machines
         uploadFeature = true;
         break;
@@ -264,8 +218,20 @@ processArguments(process.argv);
 app.use(express.static(staticPath));
 fileupload.initialize(app, uploadFolder);
 
-const server = app.listen(port, host, () => {
-    console.log('Listening on port %d...', server.address().port);
+authentication.loadAuthFile(authFile);
+
+const httpServer = http.createServer(app);
+httpServer.listen(port, host, () => {
+    console.log('Listening on port %d...', httpServer.address().port);
 });
 
-loadAuthFile(authFile);
+if (privateKeyFile && publicKeyFile) {
+  const privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+  const certificate = fs.readFileSync(publicKeyFile, 'utf8');
+  
+  const credentials = {key: privateKey, cert: certificate};
+  const httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(sslPort, host, () => {
+    console.log('Listening on SSL port %d...', httpsServer.address().port);
+  });
+}
