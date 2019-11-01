@@ -23,6 +23,7 @@ const basePlugins = [
 ];
 
 module.exports = {
+    mode: nodeEnv,
     entry: {
         client: [
             './src/index.js',
@@ -65,7 +66,7 @@ module.exports = {
         ]
     },
     plugins: basePlugins,
-    devtool: 'source-map',
+    devtool: nodeEnv === 'development' ? 'source-map' : '',
     devServer: {
         proxy: {
             '/api': {
@@ -73,6 +74,9 @@ module.exports = {
                 secure: false,
                 target: 'http://localhost:54321/',
                 pathRewrite: {'^/api/': '/'},
+            },
+            '/**': {
+                target: 'http://localhost:9000'
             }
         },
     },
