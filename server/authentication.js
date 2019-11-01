@@ -6,7 +6,7 @@ let authTable = null;
 
 const isAuthenticated = (req, res) => {
     if (!authTable) {
-      return DEFAULT_ROLE;
+      return constants.DEFAULT_ROLE;
     }
     const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
     const [login, password] = new Buffer(b64auth, 'base64').toString().split(':');
